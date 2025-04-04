@@ -19,38 +19,30 @@
 `include "../rtl/config.vh"
 
 module spi_master #( parameter integer DIV_COEF = 0 ) (
-    input             clk_in,           // Logic clock
-    input             nrst,             // SPI is active when nreset is HIGH
+    input               clk_in,           // Logic clock
+    input               nrst,             // SPI is active when nreset is HIGH
 
-    input wire [31:0] mosi_data,        // Parallel FPGA data write to SPI
-    output reg [31:0] miso_data,        // Parallel FPGA data read from SPI
-    input wire [5:0]  nbits,            // Number of bits: nbits==0 means 1 bit
+    input  [31:0]       mosi_data,        // Parallel FPGA data write to SPI
+    output [31:0]       miso_data,        // Parallel FPGA data read from SPI
+    input  [5:0]        nbits,            // Number of bits: nbits==0 means 1 bit
 
-    input wire        request,          // Request to start transfer: Active HIGH
-    output reg        ready,            // Active HIGH when transfer has finished
+    input               request,          // Request to start transfer: Active HIGH
+    output              ready,            // Active HIGH when transfer has finished
 
-    output            spi_csn,          // SPI CSN output (active LOW)
-    output            spi_sck,          // SPI clock output
-    output            spi_mosi,         // SPI master data output, slave data input
-    input             spi_miso          // SPI master data input, slave data output
+    output              spi_csn,          // SPI CSN output (active LOW)
+    output              spi_sck,          // SPI clock output
+    output              spi_mosi,         // SPI master data output, slave data input
+    input               spi_miso          // SPI master data input, slave data output
 );
-`ifdef COSIM_
-    always @(posedge clk) begin
-        $spi_master_stub(out_x_resp, csn, sck, mosi, miso);
-    end
-`else
 `ifdef SPI_DIV_COEF
 localparam div_coef = `SPI_DIV_COEF;
 `else
 localparam div_coef = (DIV_COEF == 0) ? 32'd10000 : DIV_COEF;
 `endif
-reg spi_csnff = 1'b1;
-reg spi_sckff = 1'b1;
-reg spi_mosiff = 1'b1;
-assign spi_csn = nrst ? spi_csnff : 1'b1;
-assign spi_sck = nrst ? spi_sckff : 1'b1;
-assign spi_mosi = nrst ? spi_mosiff : 1'b1;
-
+`ifdef COSIM
+    always @(posedge clk_in or negedge nrst) begin
+        $spi_master_stub(div_coef, nrst, mosi_data, miso_data, nbits, request, ready, spi_csn, spi_sck, spi_mosi, spi_miso);
+`else
 // Frequency divider
 reg [31:0] divider;
 reg divider_out;
@@ -76,19 +68,28 @@ localparam
     STATE_Low = 4'd3,
     STATE_Finish = 4'd4,
     STATE_End = 4'd5;
-
 reg [3:0] state;
 reg [31:0] data_in_reg;
 reg [5:0] nbits_reg;
 reg [5:0] bit_counter;
+reg [31:0] miso_dataff = 32'b0;
+reg spi_csnff = 1'b1;
+reg spi_sckff = 1'b1;
+reg spi_mosiff = 1'b1;
+reg readyff = 1'b0;
+assign ready = nrst ? readyff : 1'b0;
+assign miso_data = nrst ? miso_dataff : 32'b0;
+assign spi_csn = nrst ? spi_csnff : 1'b1;
+assign spi_sck = nrst ? spi_sckff : 1'b1;
+assign spi_mosi = nrst ? spi_mosiff : 1'b1;
 
-always @(posedge clk_in or negedge nrst)
+always @(posedge clk_in or negedge nrst) begin
     if (nrst == 1'b0) begin
         spi_csnff <= 1'b1;
         spi_sckff <= 1'b1;
         spi_mosiff <= 1'b1;
-        ready <= 1'b0;
-        miso_data <= 32'b0;
+        readyff <= 1'b0;
+        miso_dataff <= 32'b0;
 
         data_in_reg <= 32'b0;
         nbits_reg <= 6'b0;
@@ -103,12 +104,12 @@ always @(posedge clk_in or negedge nrst)
                 spi_mosiff <= 1'b1;
                 if (request) begin
                     state <= STATE_Run;
-                    ready <= 1'b0;
+                    readyff <= 1'b0;
                     spi_csnff <= 1'b0;
                     data_in_reg <= mosi_data;
                     nbits_reg <= nbits;
                     bit_counter <= nbits;
-                    miso_data <= 32'b0;
+                    miso_dataff <= 32'b0;
                 end
             end
 
@@ -141,7 +142,7 @@ always @(posedge clk_in or negedge nrst)
                     data_in_reg <= data_in_reg << 1'b1; // this must be out of the if (counter==0)?
                 end
                 spi_sckff <= 1'b1;
-                miso_data <= {miso_data[30:0], spi_miso}; // Sample MISO at SCK posedge
+                miso_dataff <= {miso_dataff[30:0], spi_miso}; // Sample MISO at SCK posedge
             end
 
             STATE_Finish: if (divider_out) begin
@@ -153,9 +154,15 @@ always @(posedge clk_in or negedge nrst)
 
             STATE_End: if (divider_out) begin
                 state <= STATE_Idle;
-                ready <= 1'b1;
+                readyff <= 1'b1;
             end
         endcase
     end
+//$display("%08t div_coef=%1d nrst=%d mosi_data=%4x nbits=%x request=%d spi_miso=%d divider=%1d divider_out=%d data_in_reg=%x nbits_reg=%x bit_counter=%x state=%d", $time, div_coef, nrst, mosi_data, nbits, request, spi_miso, divider, divider_out, data_in_reg, nbits_reg, bit_counter, state);
+//$display("%08t div_coef%1d nrst%d mosi_data%4x nbits%x request%d spi_miso%d divider%1d divider_out%d data_in_reg%x nbits_reg%x bit_counter%x state%1d", $time, div_coef, nrst, mosi_data, nbits, request, spi_miso, divider, divider_out, data_in_reg, nbits_reg, bit_counter, state);
+$display("%08t nrst%d mosi_data%4x nbits%x request%d spi_miso%d divider%1d divider_out%d data_in_reg%x nbits_reg%x bit_counter%x state%1d", $time, nrst, mosi_data, nbits, request, spi_miso, divider, divider_out, data_in_reg, nbits_reg, bit_counter, state);
 `endif
+//    $display("%08t div_coef=%1d nrst=%d mosi_data=%4x miso_dataff=%4x nbits=%x request=%d readyff=%d spi_csnff=%d spi_sckff=%d spi_mosiff=%d spi_miso=%d", $time, div_coef, nrst, mosi_data, miso_dataff, nbits, request, readyff, spi_csnff, spi_sckff, spi_mosiff, spi_miso);
+//    $display("%08t div_coef=%1d nrst=%d mosi_data=%4x miso_data=%4x nbits=%x request=%d ready=%d spi_csn=%d spi_sck=%d spi_mosi=%d spi_miso=%d", $time, div_coef, nrst, mosi_data, miso_data, nbits, request, ready, spi_csn, spi_sck, spi_mosi, spi_miso);
+end
 endmodule

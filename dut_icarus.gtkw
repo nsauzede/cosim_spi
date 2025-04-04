@@ -1,22 +1,28 @@
 [*]
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
-[*] Fri Apr  4 08:12:21 2025
+[*] Sun Apr  6 08:55:14 2025
 [*]
 [dumpfile] "/mnt/huge/lenovo/nico/perso/git/cosim_spi/dut_icarus.vcd"
-[dumpfile_mtime] "Fri Apr  4 08:11:48 2025"
-[dumpfile_size] 297186
+[dumpfile_mtime] "Sun Apr  6 08:54:55 2025"
+[dumpfile_size] 225805
 [savefile] "/mnt/huge/lenovo/nico/perso/git/cosim_spi/dut_icarus.gtkw"
-[timestart] 0
-[size] 1920 391
+[timestart] 1440900
+[size] 1920 341
 [pos] -1 -1
-*-22.843784 4965000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-16.843784 1865000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] dut_tb.
 [treeopen] dut_tb.dut1.
+[treeopen] dut_tb.dut1.sequencer1.
+[treeopen] dut_tb.dut1.spi_master1.
 [sst_width] 290
 [signals_width] 240
 [sst_expanded] 1
-[sst_vpaned_height] 83
+[sst_vpaned_height] 58
+@22
+dut_tb.dut1.sequencer1.state[3:0]
 @28
+dut_tb.dut1.spi_master1.request
+dut_tb.dut1.spi_master1.ready
 dut_tb.clk
 dut_tb.spi_csn
 dut_tb.spi_sck
@@ -25,15 +31,7 @@ dut_tb.spi_miso
 @22
 dut_tb.dut1.sequencer1.spi_miso_data[31:0]
 dut_tb.leds[7:0]
-@420
-dut_tb.BOARD_CK
-dut_tb.SPI_DIV_COEF
-dut_tb.clk_period
 @28
 dut_tb.reset
-dut_tb.rx
-dut_tb.tx
-@29
-dut_tb.x_l_flag
 [pattern_trace] 1
 [pattern_trace] 0

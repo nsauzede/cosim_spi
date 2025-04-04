@@ -13,8 +13,7 @@ static int lis3dh_stub_compiletf(char *user_data) {
 static int lis3dh_stub_calltf(char *user_data) {
     UNUSED(user_data);
     int out_x_resp = 0, csn = 0, sck = 0, mosi = 0;
-    int miso = 1;
-    int out_x_l_flag = 0;
+    int out_x_l_flag = 0, miso = 1;
     vpiHandle systfref, args_iter, arg_h;
     s_vpi_value arg_val;
     // Get argument handles
@@ -66,12 +65,12 @@ static int lis3dh_stub_calltf(char *user_data) {
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
         }
     }
-//    printf("%s out_x_resp=%d sck=%d csn=%d mosi=%d miso=%d\n", __func__, out_x_resp, sck, csn, mosi, miso);
+//    vpi_printf("%s out_x_resp=%d sck=%d csn=%d mosi=%d miso=%d\n", __func__, out_x_resp, sck, csn, mosi, miso);
     return 0;
 }
 
 static void lis3dh_stub_register(void) {
-    vpi_printf("%s\n", __func__);
+//    vpi_printf("%s\n", __func__);
     s_vpi_systf_data tf_data;
     memset(&tf_data, 0, sizeof(tf_data));
 
