@@ -1,18 +1,16 @@
-#define vpiZ 2
-#define vpiX 3
 static int lis3dh_stub(int out_x_resp, int csn, int sck, int mosi) {
     static enum { IDLE = 0, RECEIVING = 1, PROCESSING = 2, RESPONDING = 3 } state = IDLE;
-    static int sck_d = vpiZ;
+    static int sck_d = 1;
     static int bit_count = 0;
     static int shift_reg = 0;
-    static int misoff = vpiZ;
+    static int misoff = 1;
     static int response = 0;
     static int out_x_l_flag = 0;
     switch (state) {
         case IDLE:
             bit_count = 0;
             shift_reg = 0;
-            misoff = vpiZ;
+            misoff = 1;
             response = 0;
             out_x_l_flag = 0;
             if (!csn && !sck) {
@@ -56,5 +54,5 @@ static int lis3dh_stub(int out_x_resp, int csn, int sck, int mosi) {
             break;
     }
     sck_d = sck;
-    return !csn && (state == RESPONDING) ? misoff : vpiZ;
+    return !csn && (state == RESPONDING) ? misoff : 1;
 }

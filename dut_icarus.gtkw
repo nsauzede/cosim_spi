@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
-[*] Wed Apr  2 21:29:08 2025
+[*] Fri Apr  4 07:21:53 2025
 [*]
 [dumpfile] "dut_icarus.vcd"
-[dumpfile_mtime] "Wed Apr  2 21:28:38 2025"
-[dumpfile_size] 323072
+[dumpfile_mtime] "Fri Apr  4 07:21:44 2025"
+[dumpfile_size] 296931
 [savefile] "dut_icarus.gtkw"
-[timestart] 800000
+[timestart] 0
 [size] 1920 341
 [pos] -1 -1
-*-17.843784 1205000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-22.843784 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] dut_tb.
 [treeopen] dut_tb.dut1.
 [sst_width] 290
@@ -20,8 +20,9 @@
 dut_tb.clk
 dut_tb.spi_csn
 dut_tb.spi_sck
-dut_tb.spi_mosi
 @29
+dut_tb.spi_mosi
+@28
 dut_tb.spi_miso
 @22
 dut_tb.dut1.sequencer1.spi_miso_data[31:0]

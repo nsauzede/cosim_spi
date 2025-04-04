@@ -2,17 +2,20 @@ COSIM:=1
 GTKWAVE:=gtkwave
 
 DUT:=dut_icarus
-SRC:=dut_tb.v
-SRC+=dut.v
-SRC+=sequencer.v
-SRC+=spi_master.v
-SRC+=lis3dh_stub.v
+RTL:=rtl
+SRC:=src
+RTLS:=$(RTL)/dut_tb.v
+RTLS+=$(RTL)/dut.v
+RTLS+=$(RTL)/sequencer.v
+RTLS+=$(RTL)/spi_master.v
+RTLS+=$(RTL)/lis3dh_stub.v
 IVOPT:=-DDUT_VCD=\"$(DUT).vcd\"
 IVOPT+=-DSPI=1
 IVOPT+=-DSIMULATION=1
 IVOPT+=-DBOARD_ID=0
 IVOPT+=-DBOARD_CK=32000000
 IVOPT+=-D__UARTSPEED__=115200
+IVOPT+=-Irtl
 ifdef COSIM
 # IVERILOG_VPI_MODULE_PATH=.
 # Cadence PLI Modules (Verilog-XL)
@@ -35,10 +38,10 @@ view: $(DUT).vcd
 $(DUT).vcd: $(DUT).vvp $(VPI)
 	$(VALGRIND) vvp $(VVPOPT) $<
 
-$(DUT).vvp: $(SRC) $(VPI)
-	iverilog $(IVOPT) -o $@ $(SRC)
+$(DUT).vvp: $(RTLS) $(VPI)
+	iverilog $(IVOPT) -o $@ $(RTLS)
 
-%.vpi: %.c
+%.vpi: $(SRC)/%.c
 	iverilog-vpi $<
 
 clean:

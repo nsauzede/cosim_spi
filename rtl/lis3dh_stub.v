@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 `timescale 1ns / 1ps
-//`include "../rtl/config.vh"
+`include "../rtl/config.vh"
 
 /*
     Simple LIS3DH SPI stub (STMicroelectronics LIS3DH accelerometer)
@@ -38,19 +38,23 @@ module lis3dh_stub (
     input               clk,                    // System clock
 
     input [15:0]        out_x_resp,
-    inout               out_x_l_flag,
+    output              out_x_l_flag,
 
     input               csn,                    // SPI chip select (active low)
     input               sck,                    // SPI clock
     input               mosi,                   // SPI master out slave in
-    inout               miso                    // SPI master in slave out
+    output              miso                    // SPI master in slave out
 );
 `ifdef COSIM
     always @(posedge clk) begin
         $lis3dh_stub(out_x_resp, csn, sck, mosi, miso);
     end
 `else
-    localparam IDLE = 0, RECEIVING = 1, PROCESSING = 2, RESPONDING = 3;
+    localparam
+        IDLE = 0,
+        RECEIVING = 1,
+        PROCESSING = 2,
+        RESPONDING = 3;
     reg [1:0] state = IDLE;
     reg [7:0] shift_reg = 8'b0;   // Shift register for received data
     reg [7:0] response = 8'b0;    // Response register
@@ -58,19 +62,20 @@ module lis3dh_stub (
     reg [3:0] bit_count = 4'b0;   // Bit counter
     reg sck_d;          // previous SCK values
     reg csn_d;          // previous CSN values
-    reg misoff = 1'bz;
+    reg misoff = 1'b1;
     reg out_x_l_flagff = 1'b0;
-    assign miso = ~csn_d && (state == RESPONDING) ? misoff : 1'bz;
-    assign out_x_l_flag = ~csn ? out_x_l_flagff : 1'bz;
+    assign miso = state == IDLE ? 1'b1 : misoff;
+    assign out_x_l_flag = ~csn ? out_x_l_flagff : 1'b0;
 
     always @(posedge clk) begin
+        // Synchronize inputs to system clock
         sck_d <= sck;
         csn_d <= csn;
         case (state)
             IDLE: begin
                 bit_count <= 0;
                 shift_reg <= 8'b0;
-                misoff <= 1'bz;
+                misoff <= 1'b1;
                 out_x_l_flagff <= 1'b0;
                 if (!csn & !sck) begin
                     state <= RECEIVING;
