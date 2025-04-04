@@ -34,8 +34,8 @@ module sequencer (
     input wire [31:0] spi_miso_data,
     output reg [5:0] spi_nbits,
 
-    output reg spi_request,
-    input  wire spi_ready,
+    output spi_request,
+    input  spi_ready,
 
     output reg [7:0] led_out
 );
@@ -55,6 +55,8 @@ localparam
     STATE_Halt = 4'd15;
 
 reg [3:0] state;
+reg spi_requestff = 1'b0;
+assign spi_request = spi_requestff;
 
 localparam
     DEBUG_0 = 8'hff,
@@ -81,7 +83,7 @@ always @(posedge clk_in or negedge nrst)
 
         spi_mosi_data <= 32'b0;
         spi_nbits <= 6'b0;
-        spi_request <= 1'b0;
+        spi_requestff <= 1'b0;
 
         saved_acc <= 8'b0;
 `ifdef SIMULATION
@@ -96,7 +98,7 @@ always @(posedge clk_in or negedge nrst)
                 if (~spi_ready) begin
                 state <= STATE_Whoami_Wait;
                 end
-                spi_request <= 1'b1;
+                spi_requestff <= 1'b1;
                 spi_nbits <= 6'd15;
                 spi_mosi_data <= 31'b10001111_00000000;
             end
@@ -113,7 +115,7 @@ always @(posedge clk_in or negedge nrst)
                         state <= STATE_Init;
                     end
                 end
-                spi_request <= 1'b0;
+                spi_requestff <= 1'b0;
             end
 
             // 2. Write ODR in CTRL_REG1 (Addr 0x20)
@@ -122,7 +124,7 @@ always @(posedge clk_in or negedge nrst)
                 if (~spi_ready) begin
                 state <= STATE_Init_Wait;
                 end
-                spi_request <= 1'b1;
+                spi_requestff <= 1'b1;
                 spi_nbits <= 6'd15;
                 spi_mosi_data <= 31'b00100000_01110111;
             end
@@ -139,7 +141,7 @@ always @(posedge clk_in or negedge nrst)
                         state <= STATE_Init1;
                     end
                 end
-                spi_request <= 1'b0;
+                spi_requestff <= 1'b0;
             end
 
             // 3. Enable temperature sensor (Addr 0x1F)
@@ -148,7 +150,7 @@ always @(posedge clk_in or negedge nrst)
                 if (~spi_ready) begin
                 state <= STATE_Init1_Wait;
                 end
-                spi_request <= 1'b1;
+                spi_requestff <= 1'b1;
                 spi_nbits <= 6'd15;
                 spi_mosi_data <= 31'b00011111_11000000;
             end
@@ -165,7 +167,7 @@ always @(posedge clk_in or negedge nrst)
                         state <= STATE_Init2;
                     end
                 end
-                spi_request <= 1'b0;
+                spi_requestff <= 1'b0;
             end
 
             // 4. Enable BDU, High resolution (Addr 0x23)
@@ -174,7 +176,7 @@ always @(posedge clk_in or negedge nrst)
                 if (~spi_ready) begin
                 state <= STATE_Init2_Wait;
                 end
-                spi_request <= 1'b1;
+                spi_requestff <= 1'b1;
                 spi_nbits <= 6'd15;
                 spi_mosi_data <= 31'b00100011_10001000;
             end
@@ -194,7 +196,7 @@ always @(posedge clk_in or negedge nrst)
 `endif
                     end
                 end
-                spi_request <= 1'b0;
+                spi_requestff <= 1'b0;
             end
 
             // 5. Read OUT_X_L (Addr 0x28)
@@ -208,7 +210,7 @@ always @(posedge clk_in or negedge nrst)
                     //$display("STATE_Read => STATE_Read_Wait");
 `endif
                 end
-                spi_request <= 1'b1;
+                spi_requestff <= 1'b1;
                 spi_nbits <= 6'd23;
                   spi_mosi_data <= 31'b11101000_00000000_00000000;//28: OUT_X_L
                 //spi_mosi_data <= 31'b11101010_00000000_00000000;//2a: OUT_Y_L
@@ -230,7 +232,7 @@ always @(posedge clk_in or negedge nrst)
                     state <= STATE_LEDout;
                     saved_acc <= spi_miso_data[7:0];
                 end
-                spi_request <= 1'b0;
+                spi_requestff <= 1'b0;
             end
 
             // 6. Set LED output according to accelerometer value

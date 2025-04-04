@@ -45,7 +45,7 @@ module lis3dh_stub (
     input               mosi,                   // SPI master out slave in
     output              miso                    // SPI master in slave out
 );
-`ifdef COSIM
+`ifdef COSIM_
     always @(posedge clk) begin
         $lis3dh_stub(out_x_resp, out_x_l_flag, csn, sck, mosi, miso);
     end
