@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 `timescale 1ns / 1ps
-//`include "../../../rtl/config.vh"
+`include "../rtl/config.vh"
 
 module spi_master #( parameter integer DIV_COEF = 0 ) (
     input             clk_in,           // Logic clock
@@ -34,7 +34,11 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
     output            spi_mosi,         // SPI master data output, slave data input
     input             spi_miso          // SPI master data input, slave data output
 );
-
+`ifdef COSIM_
+    always @(posedge clk) begin
+        $spi_master_stub(out_x_resp, csn, sck, mosi, miso);
+    end
+`else
 `ifdef SPI_DIV_COEF
 localparam div_coef = `SPI_DIV_COEF;
 `else
@@ -153,4 +157,5 @@ always @(posedge clk_in or negedge nrst)
             end
         endcase
     end
+`endif
 endmodule

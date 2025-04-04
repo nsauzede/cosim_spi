@@ -13,7 +13,8 @@ static int lis3dh_stub_compiletf(char *user_data) {
 static int lis3dh_stub_calltf(char *user_data) {
     UNUSED(user_data);
     int out_x_resp = 0, csn = 0, sck = 0, mosi = 0;
-    int miso = vpiZ;
+    int miso = 1;
+    int out_x_l_flag = 0;
     vpiHandle systfref, args_iter, arg_h;
     s_vpi_value arg_val;
     // Get argument handles
@@ -47,8 +48,20 @@ static int lis3dh_stub_calltf(char *user_data) {
         if (!strcmp(name, "sck")) { sck = arg_val.value.scalar; }
         if (!strcmp(name, "csn")) { csn = arg_val.value.scalar; }
         if (!strcmp(name, "mosi")) { mosi = arg_val.value.scalar; }
+    }
+    lis3dh_stub(out_x_resp, &out_x_l_flag, csn, sck, mosi, &miso);
+    arg_val.format = vpiScalarVal;
+    // Get argument handles
+    systfref = vpi_handle(vpiSysTfCall, NULL);
+    args_iter = vpi_iterate(vpiArgument, systfref);
+    // Process each argument
+    while ((arg_h = vpi_scan(args_iter)) != NULL) {
+        const char *name = vpi_get_str(vpiName, arg_h);
+        if (!strcmp(name, "out_x_l_flag")) {
+            arg_val.value.scalar = out_x_l_flag;
+            vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
+        }
         if (!strcmp(name, "miso")) {
-            miso = lis3dh_stub(out_x_resp, csn, sck, mosi);
             arg_val.value.scalar = miso;
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
         }
@@ -58,7 +71,7 @@ static int lis3dh_stub_calltf(char *user_data) {
 }
 
 static void lis3dh_stub_register(void) {
-    printf("%s\n", __func__);
+    vpi_printf("%s\n", __func__);
     s_vpi_systf_data tf_data;
     memset(&tf_data, 0, sizeof(tf_data));
 

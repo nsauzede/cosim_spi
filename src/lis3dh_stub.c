@@ -1,18 +1,18 @@
-static int lis3dh_stub(int out_x_resp, int csn, int sck, int mosi) {
+static int lis3dh_stub(int out_x_resp, int *out_x_l_flag, int csn, int sck, int mosi, int *miso) {
     static enum { IDLE = 0, RECEIVING = 1, PROCESSING = 2, RESPONDING = 3 } state = IDLE;
     static int sck_d = 1;
     static int bit_count = 0;
     static int shift_reg = 0;
     static int misoff = 1;
     static int response = 0;
-    static int out_x_l_flag = 0;
+    static int out_x_l_flagff = 0;
     switch (state) {
         case IDLE:
             bit_count = 0;
             shift_reg = 0;
             misoff = 1;
             response = 0;
-            out_x_l_flag = 0;
+            out_x_l_flagff = 0;
             if (!csn && !sck) {
                 state = RECEIVING;
             }
@@ -31,7 +31,7 @@ static int lis3dh_stub(int out_x_resp, int csn, int sck, int mosi) {
                 response = 0x33;
             } else if ((shift_reg & 0x3f) == 0x28) {
                 response = (out_x_resp & 0xff);
-                out_x_l_flag = 1;
+                out_x_l_flagff = 1;
             }
             state = RESPONDING;
             bit_count = 0;
@@ -44,7 +44,7 @@ static int lis3dh_stub(int out_x_resp, int csn, int sck, int mosi) {
                 response <<= 1;
                 bit_count++;
                 if (bit_count == 8) {
-                    if (out_x_l_flag) {
+                    if (out_x_l_flagff) {
                         response = (out_x_resp >> 8) & 0xff;
                     } else {
                         response = 0;
@@ -54,5 +54,7 @@ static int lis3dh_stub(int out_x_resp, int csn, int sck, int mosi) {
             break;
     }
     sck_d = sck;
-    return !csn && (state == RESPONDING) ? misoff : 1;
+    if (out_x_l_flag) { *out_x_l_flag = out_x_l_flagff; }
+    if (miso) { *miso = !csn && (state == RESPONDING) ? misoff : 1; }
+    return 0;
 }
