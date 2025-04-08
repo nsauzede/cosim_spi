@@ -25,10 +25,10 @@ module dut_tb;
     reg spi3w = 0;
 `endif
 
-    wire      spi_cen;
-    wire      spi_scl;
-    wire      spi_sdi;
-    wire      spi_sdo;
+    wire      spi_csn;
+    wire      spi_sck;
+    wire      spi_mosi;
+    wire      spi_miso;
 
     initial begin
         forever begin
@@ -108,19 +108,19 @@ module dut_tb;
         .mosi_data(mosi_data),
         .ready(ready),
         .request(request),
-        .spi_cen(spi_cen),
-        .spi_scl(spi_scl),
+        .spi_csn(spi_csn),
+        .spi_sck(spi_sck),
 `ifdef SPI3WIRE
         .spi3w(spi3w),
 `endif
-        .spi_sdi(spi_sdi),
-        .spi_sdo(spi_sdo)
+        .spi_mosi(spi_mosi),
+        .spi_miso(spi_miso)
     );
     lis3dh_stub lis3dh_stub1(
         .clk(clk),
-        .csn(spi_cen),
-        .sck(spi_scl),
-        .mosi(spi_sdi),
-        .miso(spi_sdo)
+        .csn(spi_csn),
+        .sck(spi_sck),
+        .mosi(spi_mosi),
+        .miso(spi_miso)
     );
 endmodule

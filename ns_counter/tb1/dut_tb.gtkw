@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
-[*] Tue Apr  8 21:31:28 2025
+[*] Tue Apr  8 21:45:21 2025
 [*]
 [dumpfile] "dut_tb.vcd"
-[dumpfile_mtime] "Tue Apr  8 21:31:25 2025"
-[dumpfile_size] 25975
+[dumpfile_mtime] "Tue Apr  8 21:45:16 2025"
+[dumpfile_size] 25980
 [savefile] "dut_tb.gtkw"
 [timestart] 0
 [size] 1919 629
 [pos] -1 -1
-*-19.072622 3645000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+*-19.072622 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 [markername] AA
 [markername] BB
 [markername] CC
@@ -59,12 +59,12 @@ dut_tb.spi_master1.div_coef[15:0]
 dut_tb.spi_master1.ready
 dut_tb.spi_master1.request
 @29
-dut_tb.spi_master1.spi_cen
+dut_tb.spi_master1.spi_csn
 @28
-dut_tb.spi_master1.spi_scl
-dut_tb.spi_master1.spi_sdi
+dut_tb.spi_master1.spi_sck
+dut_tb.spi_master1.spi_mosi
 dut_tb.spi_master1.oe
-dut_tb.spi_master1.spi_sdo
+dut_tb.spi_master1.spi_miso
 dut_tb.spi_master1.state[2:0]
 @200
 -

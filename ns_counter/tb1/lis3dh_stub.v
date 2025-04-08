@@ -32,7 +32,7 @@
 
 /*
     LIS3DH SPI Slave stub (STMicroelectronics LIS3DH accelerometer+thermal sensor)
-    - 3/4-wire support
+    - 3/4-wire support (default 4-2ire; must set SIM=1 in CTRL_REG4= to switch to 3-wire)
     - OUT_X register can be set from outside with .out_x_resp
 */
 
@@ -45,13 +45,12 @@ module lis3dh_stub (
     input               csn,                    // SPI chip select (active low)
     input               sck,                    // SPI clock
 `ifdef SPI3WIRE
-//    inout               momi,                   // SPI master/slave out/in -- should be only this but keep 4wire signals to not break gtkw
-    inout               mosi,                   // SPI master out slave in
-    output              miso                    // SPI master in slave out      -- should be removed
+    inout               mosi,                   // 4-wire: SPI master out slave in (default/standard)
+                                                // 3-wire: SPI master/slave data output/input
 `else
     input               mosi,                   // SPI master out slave in
-    output              miso                    // SPI master in slave out
 `endif
+    output              miso                    // SPI master in slave out
 );
 
     localparam
