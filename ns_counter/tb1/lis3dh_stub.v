@@ -94,6 +94,7 @@ module lis3dh_stub (
             IDLE: begin
                 bit_count <= 0;
                 shift_reg <= 8'b0;
+                rd <= 0;
                 misoff <= 1'b1;
                 out_x_l_flagff <= 1'b0;
                 if (!csn & !sck) begin

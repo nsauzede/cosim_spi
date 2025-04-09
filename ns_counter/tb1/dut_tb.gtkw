@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
-[*] Tue Apr  8 21:45:21 2025
+[*] Wed Apr  9 14:32:49 2025
 [*]
 [dumpfile] "dut_tb.vcd"
-[dumpfile_mtime] "Tue Apr  8 21:45:16 2025"
-[dumpfile_size] 25980
+[dumpfile_mtime] "Wed Apr  9 14:32:34 2025"
+[dumpfile_size] 26302
 [savefile] "dut_tb.gtkw"
 [timestart] 0
-[size] 1919 629
+[size] 1919 686
 [pos] -1 -1
-*-19.072622 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+*-19.087477 3705000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 [markername] AA
 [markername] BB
 [markername] CC
@@ -38,32 +38,73 @@
 [markername] ZZ
 [treeopen] dut_tb.
 [treeopen] dut_tb.lis3dh_stub1.
+[treeopen] dut_tb.spi_master1.
 [sst_width] 290
 [signals_width] 207
 [sst_expanded] 1
-[sst_vpaned_height] 152
-@22
-dut_tb.spi_master1.bit_counter[4:0]
+[sst_vpaned_height] 174
 @28
 dut_tb.spi_master1.clk_in
+@c00022
+dut_tb.spi_master1.miso_data[31:0]
+@28
+(0)dut_tb.spi_master1.miso_data[31:0]
+(1)dut_tb.spi_master1.miso_data[31:0]
+(2)dut_tb.spi_master1.miso_data[31:0]
+(3)dut_tb.spi_master1.miso_data[31:0]
+(4)dut_tb.spi_master1.miso_data[31:0]
+(5)dut_tb.spi_master1.miso_data[31:0]
+(6)dut_tb.spi_master1.miso_data[31:0]
+(7)dut_tb.spi_master1.miso_data[31:0]
+(8)dut_tb.spi_master1.miso_data[31:0]
+(9)dut_tb.spi_master1.miso_data[31:0]
+(10)dut_tb.spi_master1.miso_data[31:0]
+(11)dut_tb.spi_master1.miso_data[31:0]
+(12)dut_tb.spi_master1.miso_data[31:0]
+(13)dut_tb.spi_master1.miso_data[31:0]
+(14)dut_tb.spi_master1.miso_data[31:0]
+(15)dut_tb.spi_master1.miso_data[31:0]
+(16)dut_tb.spi_master1.miso_data[31:0]
+(17)dut_tb.spi_master1.miso_data[31:0]
+(18)dut_tb.spi_master1.miso_data[31:0]
+(19)dut_tb.spi_master1.miso_data[31:0]
+(20)dut_tb.spi_master1.miso_data[31:0]
+(21)dut_tb.spi_master1.miso_data[31:0]
+(22)dut_tb.spi_master1.miso_data[31:0]
+(23)dut_tb.spi_master1.miso_data[31:0]
+(24)dut_tb.spi_master1.miso_data[31:0]
+(25)dut_tb.spi_master1.miso_data[31:0]
+(26)dut_tb.spi_master1.miso_data[31:0]
+(27)dut_tb.spi_master1.miso_data[31:0]
+(28)dut_tb.spi_master1.miso_data[31:0]
+(29)dut_tb.spi_master1.miso_data[31:0]
+(30)dut_tb.spi_master1.miso_data[31:0]
+(31)dut_tb.spi_master1.miso_data[31:0]
+@1401200
+-group_end
 @22
-dut_tb.spi_master1.miso_reg[31:0]
 dut_tb.spi_master1.mosi_data[31:0]
 dut_tb.spi_master1.mosi_reg[31:0]
 dut_tb.spi_master1.nbits_reg[4:0]
 @28
 dut_tb.spi_master1.nrst
+dut_tb.reset
 @22
 dut_tb.spi_master1.div_coef[15:0]
-@28
-dut_tb.spi_master1.ready
-dut_tb.spi_master1.request
 @29
-dut_tb.spi_master1.spi_csn
+dut_tb.spi_master1.ready
 @28
+dut_tb.spi_master1.request
+dut_tb.spi_master1.spi_csn
 dut_tb.spi_master1.spi_sck
 dut_tb.spi_master1.spi_mosi
+dut_tb.spi_master1.spi3w
+@22
+dut_tb.spi_master1.nbits[4:0]
+dut_tb.spi_master1.bit_counter[4:0]
+@28
 dut_tb.spi_master1.oe
+dut_tb.spi_master1.rd
 dut_tb.spi_master1.spi_miso
 dut_tb.spi_master1.state[2:0]
 @200
