@@ -14,7 +14,7 @@ dut_tb.vvp: dut_tb.v spi_master.v lis3dh_stub.v
 
 .PRECIOUS:%.vvp %.vcd
 %.vcd: %.vvp
-	vvp $<
+	vvp -N $<
 %.vvp: %.v
 	iverilog -o $@ $^ $(IVOPT)
 
