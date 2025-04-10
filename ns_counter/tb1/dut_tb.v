@@ -22,7 +22,6 @@ module dut_tb;
     wire [31:0] miso_data;
     reg request = 0;
     wire ready;
-    reg spimaster_nreset = 1;
 
     wire      spi_csn;
     wire      spi_sck;
@@ -46,19 +45,15 @@ module dut_tb;
 
 `ifdef SPI_CHANGE_COEF
 /* Begin change divcoef */
-        #5
-        spimaster_nreset = 0;
-        request = 1;
-        nbits = 5'd31;
+        #clk_period
+        nbits = 5'd0;
         mosi_data[31:16] = 16'h8080;    // `set divcoef as mosi_data[15:0]`
         mosi_data[15:0] = 16'd0;        // can use arbitrary divider coefficents here
-        #5
+        request = 1;
+        #(clk_period*2)
         request = 0;
-        #5
-        spimaster_nreset = 1;
-        nbits = 0;
         mosi_data = 0;
-        #5
+        #clk_period
 /* End change divcoef */
 `endif
 
@@ -75,18 +70,14 @@ module dut_tb;
         wait (ready)
 /* End switch the slave to 3-wire mode */
 /* Begin switch the master to 3-wire mode */
-        #5
-        spimaster_nreset = 0;
-        request = 1;
-        nbits = 5'd31;
+        #clk_period
+        nbits = 5'd0;
         mosi_data[31:0] = 32'h81010000;    // `set 3-wire on`
-        #5
+        request = 1;
+        #(clk_period*2)
         request = 0;
-        #5
-        spimaster_nreset = 1;
-        nbits = 0;
         mosi_data = 0;
-        #5
+        #clk_period
 /* End switch the master to 3-wire mode */
 `endif
 `endif
@@ -106,18 +97,14 @@ module dut_tb;
 `ifdef SPI3WIRE
 `ifdef SPI3WIREACTIVE
 /* Begin switch the master back to 4-wire mode */
-        #5
-        spimaster_nreset = 0;
-        request = 1;
-        nbits = 5'd31;
+        #clk_period
+        nbits = 5'd0;
         mosi_data[31:0] = 32'h81000000;    // `set 3-wire off (4-wire default)`
-        #5
+        request = 1;
+        #(clk_period*2)
         request = 0;
-        #5
-        spimaster_nreset = 1;
-        nbits = 0;
         mosi_data = 0;
-        #5
+        #clk_period
 /* End switch the master back to 4-wire mode */
 
 /* Begin switch the slave back to 4-wire mode */
@@ -154,7 +141,7 @@ module dut_tb;
     spi_master #(.DIV_COEF(1)) spi_master1 (
 `endif
         .clk_in(clk),
-        .nrst(!reset && spimaster_nreset),
+        .nrst(!reset),
         .nbits(nbits),
         .mosi_data(mosi_data),
         .miso_data(miso_data),

@@ -44,12 +44,7 @@ module lis3dh_stub (
 
     input               csn,                    // SPI chip select (active low)
     input               sck,                    // SPI clock
-`ifdef SPI3WIRE
     inout               mosi,                   // 4-wire: SPI master out slave in (default/standard)
-                                                // 3-wire: SPI master/slave data output/input
-`else
-    input               mosi,                   // SPI master out slave in
-`endif
     output              miso                    // SPI master in slave out
 );
 
@@ -68,20 +63,22 @@ module lis3dh_stub (
     reg misoff = 1'b1;
     reg out_x_l_flagff = 1'b0;
     reg rd = 1'b0;
+    reg oe = 1'b0;
 `ifdef SPI3WIRE
     reg spi3w_flag = 1'b0;
     reg spi3w = 1'b0;
     reg spi3wff = 1'b0;
-    reg oe = 1'b0;
     assign mosi = spi3w && oe && rd ? misoff : 1'bz;
 
 //    assign miso = state == IDLE ? 1'b1 : misoff;
-    assign miso = !spi3w && (state != IDLE) ? misoff : 1'b1;
+//    assign miso = !spi3w && (state != IDLE) ? misoff : 1'b1;
+    assign miso = !spi3w && oe && rd ? misoff : !spi3w && !oe && rd ? 1'b0 : 1'bz;
+//    assign miso = state == IDLE ? 1'bz : misoff;
+//    assign miso = !spi3w && oe && rd ? misoff : 1'bz;
 `else
     reg spi3w_flag = 1'b0;      // should remove
     reg spi3w = 1'b0;           // should remove
-    reg oe = 1'b0;              // should remove
-    assign miso = state == IDLE ? 1'b1 : misoff;
+    assign miso = state == IDLE ? 1'bz : misoff;
 //    assign miso = ~csn & state == RESPONDING ? misoff : 1'b1;
 `endif
     assign out_x_l_flag = ~csn ? out_x_l_flagff : 1'b0;
@@ -94,17 +91,18 @@ module lis3dh_stub (
             IDLE: begin
                 bit_count <= 0;
                 shift_reg <= 8'b0;
+                oe <= 0;
                 rd <= 0;
                 misoff <= 1'b1;
                 out_x_l_flagff <= 1'b0;
                 if (!csn & !sck) begin
+                    rd <= bit_count == 4'b0 ? mosi : rd;
                     state <= RECEIVING;
                 end
             end
             RECEIVING: begin
                 if (sck && !sck_d) begin // Falling edge of SCK
                     shift_reg <= {shift_reg[6:0], mosi};
-                    rd <= bit_count == 4'b0 ? mosi : rd;
                     bit_count <= bit_count + 1;
                     if (bit_count == 7) begin
                         state <= PROCESSING;
@@ -126,9 +124,6 @@ module lis3dh_stub (
                 end else begin
                     response <= 8'h00; // Default response
                 end
-`ifdef SPI3WIRE
-                oe <= 1'b1;
-`endif
                 state <= RESPONDING;
                 bit_count <= 0;
             end
@@ -149,6 +144,9 @@ module lis3dh_stub (
                     end
                     out_x_l_flagff <= 1'b0;
                 end else if (!sck && sck_d) begin // Rising edge of SCK
+`ifdef SPI3WIRE
+                    oe <= 1'b1;
+`endif
                     misoff <= response[7];
                     response <= {response[6:0], 1'b0};
                     bit_count <= bit_count + 1;
