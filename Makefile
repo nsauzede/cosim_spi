@@ -38,14 +38,21 @@ all: $(DUT).vcd
 view: $(DUT).vcd
 	$(GTKWAVE) ./$< ./$(DUT).gtkw &
 
+#DEBUG:=1
+ifdef DEBUG
+OUTP:=| tee cosim$(COSIM)
+endif
 .PRECIOUS:$(DUT).vcd
 $(DUT).vcd: $(DUT).vvp $(VPI)
-	$(VALGRIND) vvp $(VVPOPT) $< | tee cosim$(COSIM)
+	$(VALGRIND) vvp $(VVPOPT) $< $(OUTP)
 
 $(DUT).vvp: $(RTLS) $(VPI)
 	iverilog $(IVOPT) -o $@ $(RTLS)
 
 VPI_CFLAGS := $(shell iverilog-vpi --cflags)
+ifdef DEBUG
+VPI_CFLAGS+=-DDEBUG
+endif
 %.o: $(SRC)/%.c
 	$(CC) -c $^ $(VPI_CFLAGS) -Wall -Werror
 %.vpi: %.o

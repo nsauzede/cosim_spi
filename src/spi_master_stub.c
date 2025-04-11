@@ -2,18 +2,20 @@
 
 static int spi_master_stub(int div_coef, int nrst, int mosi_data, int *miso_data, int nbits, int request, int *ready, int *spi_csn, int *spi_sck, int *spi_mosi, int spi_miso) {
     static int divider_pre = 0;
-    static int divider = 0;
     int divider_out_pre = 0;
     static int divider_out = 0;
     typedef enum { STATE_Idle = 0, STATE_Run = 1, STATE_High = 2, STATE_Low = 3, STATE_Finish = 4, STATE_End = 5 } State_t;
     static State_t state = STATE_Idle;
-    State_t stateff = state;
     static int data_in_reg = 0;
-    int data_in_regff = data_in_reg;
     static int nbits_reg = 0;
-    int nbits_regff = nbits_reg;
     static int bit_counter = 0;
+#ifdef DEBUG
+    static int divider = 0;
+    State_t stateff = state;
+    int data_in_regff = data_in_reg;
+    int nbits_regff = nbits_reg;
     int bit_counterff = bit_counter;
+#endif
 
     static int miso_dataff = 0;
     static int readyff = 0;
@@ -105,10 +107,10 @@ static int spi_master_stub(int div_coef, int nrst, int mosi_data, int *miso_data
                 break;
         }
     }
-//    printf("%08u div_coef=%d nrst=%d mosi_data=%08x nbits=%02x request=%d spi_miso=%d divider=%d divider_out=%d data_in_reg=%08x nbits_reg=%02x bit_counter=%02x state=%2d\n", sim_time.low, div_coef, nrst, mosi_data, nbits, request, spi_miso, divider, divider_out, data_in_regff, nbits_regff, bit_counter, state);
-//    printf("%08u div_coef%d nrst%d mosi_data%08x nbits%02x request%d spi_miso%d divider%d divider_out%d data_in_reg%08x nbits_reg%02x bit_counter%02x state%1d\n", sim_time.low, div_coef, nrst, mosi_data, nbits, request, spi_miso, divider, divider_out, data_in_regff, nbits_regff, bit_counterff, stateff);
+#ifdef DEBUG
     printf("%08u nrst%d mosi_data%08x nbits%02x request%d spi_miso%d divider%d divider_out%d data_in_reg%08x nbits_reg%02x bit_counter%02x state%1d\n", sim_time.low, nrst, mosi_data, nbits, request, spi_miso, divider, divider_out, data_in_regff, nbits_regff, bit_counterff, stateff);
     divider = divider_pre;
+#endif
     divider_out = divider_out_pre;
 
     if (miso_data) { *miso_data = miso_dataff; }

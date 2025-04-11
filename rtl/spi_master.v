@@ -158,11 +158,7 @@ always @(posedge clk_in or negedge nrst) begin
             end
         endcase
     end
-//$display("%08t div_coef=%1d nrst=%d mosi_data=%4x nbits=%x request=%d spi_miso=%d divider=%1d divider_out=%d data_in_reg=%x nbits_reg=%x bit_counter=%x state=%d", $time, div_coef, nrst, mosi_data, nbits, request, spi_miso, divider, divider_out, data_in_reg, nbits_reg, bit_counter, state);
-//$display("%08t div_coef%1d nrst%d mosi_data%4x nbits%x request%d spi_miso%d divider%1d divider_out%d data_in_reg%x nbits_reg%x bit_counter%x state%1d", $time, div_coef, nrst, mosi_data, nbits, request, spi_miso, divider, divider_out, data_in_reg, nbits_reg, bit_counter, state);
-$display("%08t nrst%d mosi_data%4x nbits%x request%d spi_miso%d divider%1d divider_out%d data_in_reg%x nbits_reg%x bit_counter%x state%1d", $time, nrst, mosi_data, nbits, request, spi_miso, divider, divider_out, data_in_reg, nbits_reg, bit_counter, state);
+//$display("%08t nrst%d mosi_data%4x nbits%x request%d spi_miso%d divider%1d divider_out%d data_in_reg%x nbits_reg%x bit_counter%x state%1d", $time, nrst, mosi_data, nbits, request, spi_miso, divider, divider_out, data_in_reg, nbits_reg, bit_counter, state);
 `endif
-//    $display("%08t div_coef=%1d nrst=%d mosi_data=%4x miso_dataff=%4x nbits=%x request=%d readyff=%d spi_csnff=%d spi_sckff=%d spi_mosiff=%d spi_miso=%d", $time, div_coef, nrst, mosi_data, miso_dataff, nbits, request, readyff, spi_csnff, spi_sckff, spi_mosiff, spi_miso);
-//    $display("%08t div_coef=%1d nrst=%d mosi_data=%4x miso_data=%4x nbits=%x request=%d ready=%d spi_csn=%d spi_sck=%d spi_mosi=%d spi_miso=%d", $time, div_coef, nrst, mosi_data, miso_data, nbits, request, ready, spi_csn, spi_sck, spi_mosi, spi_miso);
 end
 endmodule
