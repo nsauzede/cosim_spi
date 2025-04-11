@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
-[*] Wed Apr  9 14:32:49 2025
+[*] Thu Apr 10 18:28:15 2025
 [*]
 [dumpfile] "dut_tb.vcd"
-[dumpfile_mtime] "Wed Apr  9 14:32:34 2025"
-[dumpfile_size] 26302
+[dumpfile_mtime] "Thu Apr 10 18:27:00 2025"
+[dumpfile_size] 27044
 [savefile] "dut_tb.gtkw"
 [timestart] 0
 [size] 1919 686
 [pos] -1 -1
-*-19.087477 3705000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+*-19.113110 3424000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 [markername] AA
 [markername] BB
 [markername] CC
@@ -91,13 +91,17 @@ dut_tb.spi_master1.nrst
 dut_tb.reset
 @22
 dut_tb.spi_master1.div_coef[15:0]
-@29
-dut_tb.spi_master1.ready
 @28
+dut_tb.spi_master1.ready
+dut_tb.spi_master1.foo
+dut_tb.spi_master1.bar
 dut_tb.spi_master1.request
 dut_tb.spi_master1.spi_csn
 dut_tb.spi_master1.spi_sck
 dut_tb.spi_master1.spi_mosi
+@29
+dut_tb.spi_master1.spi_miso
+@28
 dut_tb.spi_master1.spi3w
 @22
 dut_tb.spi_master1.nbits[4:0]
@@ -105,7 +109,6 @@ dut_tb.spi_master1.bit_counter[4:0]
 @28
 dut_tb.spi_master1.oe
 dut_tb.spi_master1.rd
-dut_tb.spi_master1.spi_miso
 dut_tb.spi_master1.state[2:0]
 @200
 -
