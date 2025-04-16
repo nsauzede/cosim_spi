@@ -87,7 +87,6 @@ module dut3w_tb;
 /* End change divcoef */
 `endif
 
-
 `ifdef SPI3WIRE
 `ifdef SPI3WIREACTIVE
         // By default, both master and slave are in 4-wire mode; we will turn them to 3-wire mode sequentially
@@ -117,6 +116,7 @@ module dut3w_tb;
         #50       request = 1;
         #10 request = 0;
         wait (ready)
+        //$fatal(1, "Bailing out");
         if (miso_data[7:0] !== 8'h33) begin     // note we use the strict inequality in case the signal has X or Z
             $display("BAD miso_data=%x", miso_data);
             reset = 1'bx;
@@ -152,7 +152,8 @@ module dut3w_tb;
         #50       request = 1;
         #10 request = 0;
         wait (ready)
-        if (miso_data[7:0] !== 8'h33) begin     // note we use the strict inequality in case the signal has X or Z
+        // note we use the strict inequality in case the signal has X or Z
+        if (miso_data[7:0] !== 8'h33) begin
             $display("BAD miso_data=%x", miso_data);
             reset = 1'bx;
             #1000

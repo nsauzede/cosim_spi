@@ -1,10 +1,10 @@
 [*]
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
-[*] Sat Apr 19 17:06:39 2025
+[*] Mon Apr 21 22:23:51 2025
 [*]
 [dumpfile] "dut3w_tb.vcd"
-[dumpfile_mtime] "Sat Apr 19 17:06:30 2025"
-[dumpfile_size] 27111
+[dumpfile_mtime] "Mon Apr 21 22:06:46 2025"
+[dumpfile_size] 27186
 [savefile] "dut3w_tb.gtkw"
 [timestart] 0
 [size] 1919 505
@@ -47,6 +47,7 @@
 dut3w_tb.spi_master1.PROFILE
 @28
 dut3w_tb.spi_master1.clk_in
+dut3w_tb.reset
 @c00022
 dut3w_tb.spi_master1.miso_data[31:0]
 @28
@@ -85,7 +86,6 @@ dut3w_tb.spi_master1.miso_data[31:0]
 @1401200
 -group_end
 @22
-dut3w_tb.spi_master1.miso_reg[31:0]
 dut3w_tb.spi_master1.mosi_data[31:0]
 dut3w_tb.spi_master1.div_coef[15:0]
 @28
@@ -99,19 +99,17 @@ dut3w_tb.spi_master1.spi_miso
 dut3w_tb.spi_master1.nbits[4:0]
 @28
 dut3w_tb.spi_master1.oe
-dut3w_tb.spi_master1.state[2:0]
 @200
 -lis3dh
 @28
 dut3w_tb.lis3dh_stub1.state[1:0]
 @22
-dut3w_tb.lis3dh_stub1.response[7:0]
-@28
-dut3w_tb.lis3dh_stub1.misoff
-@22
 dut3w_tb.lis3dh_stub1.bit_count[3:0]
 dut3w_tb.lis3dh_stub1.shift_reg[7:0]
+@29
+dut3w_tb.lis3dh_stub1.rd
 @28
 dut3w_tb.lis3dh_stub1.oe
+dut3w_tb.lis3dh_stub1.spi3w
 [pattern_trace] 1
 [pattern_trace] 0

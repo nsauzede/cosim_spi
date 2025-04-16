@@ -43,8 +43,13 @@ static int lis3dh_stub_compiletf(char *user_data) {
 static int lis3dh_stub_calltf(char *user_data) {
     UNUSED(user_data);
     int out_x_resp = 0, csn = 0, sck = 0;
-    int out_x_l_flag = 0, mosi = 0, misoff = 1;
-    int state = 0, bit_count = 0, shift_reg = 0;
+    int out_x_l_flag = 0, mosi = 0, miso = 0;
+    int state = 0, bit_count = 0, shift_reg = 0, rd = 0, oe = 0, spi3w = 0;
+    // we use 2 ffs because $lis3dh_stub is called on both clk edges
+    static int rdff = 0, rdff2 = 0;
+    static int oeff = 0, oeff2 = 0;
+    static int spi3wff = 0, spi3wff2 = 0;
+    static int misoff = 0, misoff2 = 0;
 //    int mosi_pre = 0;
     vpiHandle systfref, args_iter, arg_h;
     s_vpi_value arg_val;
@@ -62,10 +67,6 @@ static int lis3dh_stub_calltf(char *user_data) {
             vpi_printf("Signal %s value: %d\n", name, out_x_resp);
 #endif
             continue;
-        } else if (!strcmp(name, "mosi")) {
-            arg_val.format = vpiScalarVal;
-            vpi_get_value(arg_h, &arg_val);
-            mosi = arg_val.value.scalar;
         }
         arg_val.format = vpiScalarVal;
         vpi_get_value(arg_h, &arg_val);
@@ -84,7 +85,8 @@ static int lis3dh_stub_calltf(char *user_data) {
         else if (!strcmp(name, "csn")) { csn = arg_val.value.scalar; }
         else if (!strcmp(name, "mosi")) { mosi = arg_val.value.scalar; }
     }
-    lis3dh_stub(out_x_resp, &out_x_l_flag, csn, sck, &mosi, &misoff, &state, &bit_count, &shift_reg);
+    int mosi_ = mosi;
+    lis3dh_stub(out_x_resp, &out_x_l_flag, csn, sck, &mosi, &miso, &state, &bit_count, &shift_reg, &rd, &oe, &spi3w);
     // Get argument handles
     systfref = vpi_handle(vpiSysTfCall, NULL);
     args_iter = vpi_iterate(vpiArgument, systfref);
@@ -97,11 +99,11 @@ static int lis3dh_stub_calltf(char *user_data) {
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
         } else if (!strcmp(name, "misoff")) {
             arg_val.format = vpiScalarVal;
-            arg_val.value.scalar = misoff;
+            arg_val.value.scalar = misoff2;
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
         } else if (!strcmp(name, "mosi")) {
             arg_val.format = vpiScalarVal;
-            arg_val.value.scalar = mosi;
+            arg_val.value.scalar = rdff2 && oeff2 && spi3wff2 ? mosi : mosi_;
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
         } else if (!strcmp(name, "state")) {
             arg_val.format = vpiIntVal;
@@ -115,8 +117,24 @@ static int lis3dh_stub_calltf(char *user_data) {
             arg_val.format = vpiIntVal;
             arg_val.value.integer = shift_reg;
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
+        } else if (!strcmp(name, "rd")) {
+            arg_val.format = vpiScalarVal;
+            arg_val.value.scalar = rdff2;
+            vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
+        } else if (!strcmp(name, "oe")) {
+            arg_val.format = vpiScalarVal;
+            arg_val.value.scalar = oeff2;
+            vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
+        } else if (!strcmp(name, "spi3w")) {
+            arg_val.format = vpiScalarVal;
+            arg_val.value.scalar = spi3wff2;
+            vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
         }
     }
+    rdff2 = rdff; rdff = rd;
+    oeff2 = oeff; oeff = oe;
+    spi3wff2 = spi3wff; spi3wff = spi3w;
+    misoff2 = misoff; misoff = miso;
 //    vpi_printf("%s out_x_resp=%d sck=%d csn=%d mosi=%d miso=%d\n", __func__, out_x_resp, sck, csn, mosi, miso);
     return 0;
 }

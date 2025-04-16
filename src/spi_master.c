@@ -69,7 +69,7 @@ static int spi_master(int *div_coef, int nrst, int mosi_data, int *miso_data, in
     static int divider_out = 0;
     static int configure = 0;
     static int div_coef_ = -1;
-    if (div_coef_ == -1) div_coef_ = div_coef ? *div_coef : 0;
+    if (div_coef_ == -1) div_coef_ = div_coef ? (*div_coef ? *div_coef - 1 : 10000) : 10000;
 
     // Frequency divider
     if (!nrst || configure) {

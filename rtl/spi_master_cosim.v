@@ -47,30 +47,31 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
     input               spi_miso          // SPI master data input, slave data output
 );
 `ifdef SPI3WIRE
-localparam PROFILE = "3W CO";
+    localparam PROFILE = "3W CO";
 `else
-localparam PROFILE = "__ CO";
+    localparam PROFILE = "__ CO";
 `endif
 `ifdef SPI_DIV_COEF
-localparam div_coef_ = `SPI_DIV_COEF;
+    localparam div_coef_ = `SPI_DIV_COEF;
 `else
-localparam div_coef_ = (DIV_COEF == 0) ? 16'd10000 : DIV_COEF - 1;
+// Do not decrement non-zero DIV_COEF here! It will be done in $spi_master VPI!
+    localparam div_coef_ = (DIV_COEF == 0) ? 16'd10000 : DIV_COEF;
 `endif
 // Frequency divider
-reg [15:0] div_coef = div_coef_;
-reg [31:0] debug = 0;
-wire oe = debug[0];
+    reg [15:0] div_coef = div_coef_;
+    reg [31:0] debug = 0;
+    wire oe = debug[0];
 // we use a "wire+reg" in cosim mode for ready output,
 // else the VPI call modifies the reg one clock too early (iverilog-specific ?)
-wire readyff;
-reg readyff2 = 0;
-assign ready = readyff2;
-wire [31:0] miso_reg;
-reg [31:0] miso_regff = 0;
+    wire readyff;
+    reg readyff2 = 0;
+    assign ready = readyff2;
+    wire [31:0] miso_reg;
+    reg [31:0] miso_regff = 0;
 
-always @(posedge clk_in) begin
-    $spi_master(div_coef, nrst, mosi_data, miso_data, nbits, request, readyff, spi_csn, spi_sck, spi_mosi, spi_miso, debug, miso_reg);
-    readyff2 <= readyff;
-    miso_regff <= miso_reg;
-end
+    always @(posedge clk_in) begin
+        $spi_master(div_coef, nrst, mosi_data, miso_data, nbits, request, readyff, spi_csn, spi_sck, spi_mosi, spi_miso, debug, miso_reg);
+        readyff2 <= readyff;
+        miso_regff <= miso_reg;
+    end
 endmodule

@@ -64,9 +64,9 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
     input               spi_miso        // SPI master data input, slave data output
 );
 `ifdef SPI3WIRE
-localparam PROFILE = "3W __";
+    localparam PROFILE = "3W __";
 `else
-localparam PROFILE = "__ __";
+    localparam PROFILE = "__ __";
 `endif
     localparam
         STATE_Idle = 0,
