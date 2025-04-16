@@ -28,62 +28,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-module dut #(parameter integer SPI_DIV_COEF = 0) (
-`ifdef SIMULATION
-    input wire x_l_flag,
-    output [15:0] x_l_response,
+`timescale 1ns / 1ps
+`include "../rtl/config.vh"
+
+module spi_master #( parameter integer DIV_COEF = 0 ) (
+    input               clk_in,           // Logic clock
+    input               nrst,             // SPI is active when nreset is HIGH
+
+    input  [31:0]       mosi_data,        // Parallel FPGA data write to SPI
+    output [31:0]       miso_data,        // Parallel FPGA data read from SPI
+    input  [5:0]        nbits,            // Number of bits: nbits==0 means 1 bit
+
+    input               request,          // Request to start transfer: Active HIGH
+    output              ready,            // Active HIGH when transfer has finished
+
+    output              spi_csn,          // SPI CSN output (active LOW)
+    output              spi_sck,          // SPI clock output
+    output              spi_mosi,         // SPI master data output, slave data input
+    input               spi_miso          // SPI master data input, slave data output
+);
+`ifdef SPI_DIV_COEF
+localparam div_coef = `SPI_DIV_COEF;
+`else
+localparam div_coef = (DIV_COEF == 0) ? 32'd10000 : DIV_COEF;
 `endif
-    input rx,
-    output tx,
-    input spi_miso,
-    output spi_mosi,
-    output spi_csn,
-    output spi_sck,
-    output [7:0] leds,
-    input reset,
-    input clk
-);
-
-wire [31:0] spi_mosi_data;
-wire [31:0] spi_miso_data;
-wire [5:0] spi_nbits;
-wire spi_request;
-wire spi_ready;
-assign tx = 1;
-
-sequencer sequencer1 (
-`ifdef SIMULATION
-    .x_l_flag(x_l_flag),
-    .x_l_response(x_l_response),
-`endif
-    .clk_in(clk),
-    .nrst(~reset),
-
-    .spi_mosi_data(spi_mosi_data),
-    .spi_miso_data(spi_miso_data),
-    .spi_nbits(spi_nbits),
-
-    .spi_request(spi_request),
-    .spi_ready(spi_ready),
-
-    .led_out(leds)
-);
-
-spi_master #(.DIV_COEF(SPI_DIV_COEF)) spi_master1 (
-    .clk_in(clk),
-    .nrst(~reset),
-
-    .spi_sck(spi_sck),
-    .spi_mosi(spi_mosi),
-    .spi_miso(spi_miso),
-    .spi_csn(spi_csn),
-
-    .mosi_data(spi_mosi_data),
-    .miso_data(spi_miso_data),
-    .nbits(spi_nbits),
-
-    .request(spi_request),
-    .ready(spi_ready)
-);
-
+always @(posedge clk_in or negedge nrst) begin
+    $spi_master_stub(div_coef, nrst, mosi_data, miso_data, nbits, request, ready, spi_csn, spi_sck, spi_mosi, spi_miso);
+end
 endmodule

@@ -39,10 +39,6 @@ localparam div_coef = `SPI_DIV_COEF;
 `else
 localparam div_coef = (DIV_COEF == 0) ? 32'd10000 : DIV_COEF;
 `endif
-`ifdef COSIM
-    always @(posedge clk_in or negedge nrst) begin
-        $spi_master_stub(div_coef, nrst, mosi_data, miso_data, nbits, request, ready, spi_csn, spi_sck, spi_mosi, spi_miso);
-`else
 // Frequency divider
 reg [31:0] divider;
 reg divider_out;
@@ -159,6 +155,5 @@ always @(posedge clk_in or negedge nrst) begin
         endcase
     end
 //$display("%08t nrst%d mosi_data%4x nbits%x request%d spi_miso%d divider%1d divider_out%d data_in_reg%x nbits_reg%x bit_counter%x state%1d", $time, nrst, mosi_data, nbits, request, spi_miso, divider, divider_out, data_in_reg, nbits_reg, bit_counter, state);
-`endif
 end
 endmodule
