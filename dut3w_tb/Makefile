@@ -29,6 +29,7 @@
 #
 
 DUT_TB:=dut3w_tb
+COSIM:=1
 SPI3WIRE:=1
 RTL_MODULES:=$(DUT_TB).v
 #RTL_MODULES+=spi_master.v lis3dh_stub.v

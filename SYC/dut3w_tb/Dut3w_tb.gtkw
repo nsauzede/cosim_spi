@@ -1,0 +1,64 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Thu Apr 17 23:25:42 2025
+[*]
+[dumpfile] "Dut3w_tb.vcd"
+[dumpfile_mtime] "Thu Apr 17 23:23:10 2025"
+[dumpfile_size] 4674
+[savefile] "Dut3w_tb.gtkw"
+[timestart] 0
+[size] 1918 485
+[pos] -1 -1
+*-7.598653 305 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[markername] AA
+[markername] BB
+[markername] CC
+[markername] DD
+[markername] EE
+[markername] FF
+[markername] GG
+[markername] HH
+[markername] II
+[markername] JJ
+[markername] KK
+[markername] LL
+[markername] MM
+[markername] NN
+[markername] OO
+[markername] PP
+[markername] QQ
+[markername] RR
+[markername] SS
+[markername] TT
+[markername] UU
+[markername] VV
+[markername] WW
+[markername] XX
+[markername] YY
+[markername] ZZ
+[sst_width] 290
+[signals_width] 214
+[sst_expanded] 1
+[sst_vpaned_height] 82
+@22
+SystemC.out_x_resp[15:0]
+@28
+SystemC.clk
+SystemC.nrst
+@22
+SystemC.miso_data[31:0]
+SystemC.mosi_data[31:0]
+SystemC.div_coef[15:0]
+@28
+SystemC.ready
+SystemC.request
+SystemC.spi_csn
+SystemC.spi_sck
+@29
+SystemC.spi_mosi
+@28
+SystemC.spi_miso
+@22
+SystemC.nbits[4:0]
+[pattern_trace] 1
+[pattern_trace] 0

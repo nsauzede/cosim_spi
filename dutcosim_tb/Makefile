@@ -31,6 +31,7 @@
 DUT:=dutcosim
 DUT_TB:=$(DUT)_tb
 COSIM:=1
+SPI3WIRE:=1
 RTL_MODULES:=$(DUT_TB).v $(DUT).v sequencer.v
 COSIM_MODULES:=spi_master lis3dh_stub
 
