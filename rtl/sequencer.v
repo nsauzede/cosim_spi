@@ -32,7 +32,7 @@ module sequencer (
 
     output reg [31:0] spi_mosi_data,
     input wire [31:0] spi_miso_data,
-    output reg [5:0] spi_nbits,
+    output reg [4:0] spi_nbits,
 
     output spi_request,
     input  spi_ready,
@@ -82,7 +82,7 @@ always @(posedge clk_in or negedge nrst)
         state <= STATE_Whoami;
 
         spi_mosi_data <= 32'b0;
-        spi_nbits <= 6'b0;
+        spi_nbits <= 5'b0;
         spi_requestff <= 1'b0;
 
         saved_acc <= 8'b0;
@@ -99,7 +99,7 @@ always @(posedge clk_in or negedge nrst)
                 state <= STATE_Whoami_Wait;
                 end
                 spi_requestff <= 1'b1;
-                spi_nbits <= 6'd15;
+                spi_nbits <= 5'd15;
                 spi_mosi_data <= 31'b10001111_00000000;
             end
 
@@ -125,7 +125,7 @@ always @(posedge clk_in or negedge nrst)
                 state <= STATE_Init_Wait;
                 end
                 spi_requestff <= 1'b1;
-                spi_nbits <= 6'd15;
+                spi_nbits <= 5'd15;
                 spi_mosi_data <= 31'b00100000_01110111;
             end
 
@@ -151,7 +151,7 @@ always @(posedge clk_in or negedge nrst)
                 state <= STATE_Init1_Wait;
                 end
                 spi_requestff <= 1'b1;
-                spi_nbits <= 6'd15;
+                spi_nbits <= 5'd15;
                 spi_mosi_data <= 31'b00011111_11000000;
             end
 
@@ -177,7 +177,7 @@ always @(posedge clk_in or negedge nrst)
                 state <= STATE_Init2_Wait;
                 end
                 spi_requestff <= 1'b1;
-                spi_nbits <= 6'd15;
+                spi_nbits <= 5'd15;
                 spi_mosi_data <= 31'b00100011_10001000;
             end
 
@@ -211,7 +211,7 @@ always @(posedge clk_in or negedge nrst)
 `endif
                 end
                 spi_requestff <= 1'b1;
-                spi_nbits <= 6'd23;
+                spi_nbits <= 5'd23;
                   spi_mosi_data <= 31'b11101000_00000000_00000000;//28: OUT_X_L
                 //spi_mosi_data <= 31'b11101010_00000000_00000000;//2a: OUT_Y_L
                 //spi_mosi_data <= 31'b11101100_00000000_00000000;//2c: OUT_Z_L

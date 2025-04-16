@@ -2,10 +2,10 @@
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
 [*] Sun Apr  6 08:55:14 2025
 [*]
-[dumpfile] "/mnt/huge/lenovo/nico/perso/git/cosim_spi/dut_icarus.vcd"
+[dumpfile] "dut_icarus.vcd"
 [dumpfile_mtime] "Sun Apr  6 08:54:55 2025"
 [dumpfile_size] 225805
-[savefile] "/mnt/huge/lenovo/nico/perso/git/cosim_spi/dut_icarus.gtkw"
+[savefile] "dut_icarus.gtkw"
 [timestart] 1440900
 [size] 1920 341
 [pos] -1 -1

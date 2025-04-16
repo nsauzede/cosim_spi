@@ -37,7 +37,7 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
 
     input  [31:0]       mosi_data,        // Parallel FPGA data write to SPI
     output [31:0]       miso_data,        // Parallel FPGA data read from SPI
-    input  [5:0]        nbits,            // Number of bits: nbits==0 means 1 bit
+    input  [4:0]        nbits,            // Number of bits: nbits==0 means 1 bit
 
     input               request,          // Request to start transfer: Active HIGH
     output              ready,            // Active HIGH when transfer has finished

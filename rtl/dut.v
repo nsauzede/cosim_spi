@@ -46,7 +46,7 @@ module dut #(parameter integer SPI_DIV_COEF = 0) (
 
 wire [31:0] spi_mosi_data;
 wire [31:0] spi_miso_data;
-wire [5:0] spi_nbits;
+wire [4:0] spi_nbits;
 wire spi_request;
 wire spi_ready;
 assign tx = 1;
