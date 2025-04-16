@@ -230,7 +230,8 @@ always @(posedge clk_in or negedge nrst)
                     //$display("STATE_Read_Wait => STATE_LEDout - spi_miso_data=%02x", spi_miso_data);
 `endif
                     state <= STATE_LEDout;
-                    saved_acc <= spi_miso_data[7:0];
+                    //saved_acc <= spi_miso_data[7:0];
+                    saved_acc <= spi_miso_data[15:8];
                 end
                 spi_requestff <= 1'b0;
             end
