@@ -30,9 +30,9 @@
 
 `timescale 1ns / 1ps
 `ifndef DUT_VCD
-`define DUT_VCD "dut.vcd"
+`define DUT_VCD "dutcosim_tb.vcd"
 `endif
-module dut_tb;
+module dutcosim_tb;
     // Parameters
     parameter integer BOARD_CK = 32000000;
     parameter integer SPI_DIV_COEF = 32'd1;
@@ -49,7 +49,7 @@ module dut_tb;
     wire [15:0] x_l_response;
 `endif
 
-    dut #(.SPI_DIV_COEF(SPI_DIV_COEF)) dut1 (
+    dutcosim #(.SPI_DIV_COEF(SPI_DIV_COEF)) dutcosim1 (
 `ifdef SIMULATION
         .x_l_flag(x_l_flag),
         .x_l_response(x_l_response),
@@ -90,7 +90,7 @@ module dut_tb;
     initial begin
         reset = 1'b1;
         $dumpfile(`DUT_VCD);
-        $dumpvars(0, dut_tb);
+        $dumpvars(0, dutcosim_tb);
         #1e3       reset = 1'b0;
 //        #10       reset = 1'b0;
 

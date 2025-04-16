@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-module dut #(parameter integer SPI_DIV_COEF = 0) (
+module dutcosim #(parameter integer SPI_DIV_COEF = 0) (
 `ifdef SIMULATION
     input wire x_l_flag,
     output [15:0] x_l_response,

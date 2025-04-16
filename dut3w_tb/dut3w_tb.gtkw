@@ -1,0 +1,128 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Wed Apr 16 21:59:44 2025
+[*]
+[dumpfile] "dut3w_tb.vcd"
+[dumpfile_mtime] "Wed Apr 16 21:59:33 2025"
+[dumpfile_size] 26994
+[savefile] "dut3w_tb.gtkw"
+[timestart] 0
+[size] 1919 697
+[pos] -1 -1
+*-19.113110 3424000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[markername] AA
+[markername] BB
+[markername] CC
+[markername] DD
+[markername] EE
+[markername] FF
+[markername] GG
+[markername] HH
+[markername] II
+[markername] JJ
+[markername] KK
+[markername] LL
+[markername] MM
+[markername] NN
+[markername] OO
+[markername] PP
+[markername] QQ
+[markername] RR
+[markername] SS
+[markername] TT
+[markername] UU
+[markername] VV
+[markername] WW
+[markername] XX
+[markername] YY
+[markername] ZZ
+[treeopen] dut3w_tb.
+[treeopen] dut3w_tb.lis3dh_stub1.
+[treeopen] dut3w_tb.spi_master1.
+[sst_width] 290
+[signals_width] 207
+[sst_expanded] 1
+[sst_vpaned_height] 179
+@28
+dut3w_tb.spi_master1.clk_in
+@c00022
+dut3w_tb.spi_master1.miso_data[31:0]
+@28
+(0)dut3w_tb.spi_master1.miso_data[31:0]
+(1)dut3w_tb.spi_master1.miso_data[31:0]
+(2)dut3w_tb.spi_master1.miso_data[31:0]
+(3)dut3w_tb.spi_master1.miso_data[31:0]
+(4)dut3w_tb.spi_master1.miso_data[31:0]
+(5)dut3w_tb.spi_master1.miso_data[31:0]
+(6)dut3w_tb.spi_master1.miso_data[31:0]
+(7)dut3w_tb.spi_master1.miso_data[31:0]
+(8)dut3w_tb.spi_master1.miso_data[31:0]
+(9)dut3w_tb.spi_master1.miso_data[31:0]
+(10)dut3w_tb.spi_master1.miso_data[31:0]
+(11)dut3w_tb.spi_master1.miso_data[31:0]
+(12)dut3w_tb.spi_master1.miso_data[31:0]
+(13)dut3w_tb.spi_master1.miso_data[31:0]
+(14)dut3w_tb.spi_master1.miso_data[31:0]
+(15)dut3w_tb.spi_master1.miso_data[31:0]
+(16)dut3w_tb.spi_master1.miso_data[31:0]
+(17)dut3w_tb.spi_master1.miso_data[31:0]
+(18)dut3w_tb.spi_master1.miso_data[31:0]
+(19)dut3w_tb.spi_master1.miso_data[31:0]
+(20)dut3w_tb.spi_master1.miso_data[31:0]
+(21)dut3w_tb.spi_master1.miso_data[31:0]
+(22)dut3w_tb.spi_master1.miso_data[31:0]
+(23)dut3w_tb.spi_master1.miso_data[31:0]
+(24)dut3w_tb.spi_master1.miso_data[31:0]
+(25)dut3w_tb.spi_master1.miso_data[31:0]
+(26)dut3w_tb.spi_master1.miso_data[31:0]
+(27)dut3w_tb.spi_master1.miso_data[31:0]
+(28)dut3w_tb.spi_master1.miso_data[31:0]
+(29)dut3w_tb.spi_master1.miso_data[31:0]
+(30)dut3w_tb.spi_master1.miso_data[31:0]
+(31)dut3w_tb.spi_master1.miso_data[31:0]
+@1401200
+-group_end
+@22
+dut3w_tb.spi_master1.mosi_data[31:0]
+dut3w_tb.spi_master1.mosi_reg[31:0]
+dut3w_tb.spi_master1.nbits_reg[4:0]
+@28
+dut3w_tb.spi_master1.nrst
+dut3w_tb.reset
+@22
+dut3w_tb.spi_master1.div_coef[15:0]
+@28
+dut3w_tb.spi_master1.ready
+dut3w_tb.spi_master1.request
+dut3w_tb.spi_master1.spi_csn
+dut3w_tb.spi_master1.spi_sck
+dut3w_tb.spi_master1.spi_mosi
+dut3w_tb.spi_master1.spi_miso
+dut3w_tb.spi_master1.spi3w
+@22
+dut3w_tb.spi_master1.nbits[4:0]
+dut3w_tb.spi_master1.bit_counter[4:0]
+@28
+dut3w_tb.spi_master1.oe
+dut3w_tb.spi_master1.rd
+dut3w_tb.spi_master1.state[2:0]
+@200
+-
+@28
+dut3w_tb.lis3dh_stub1.state[1:0]
+@22
+dut3w_tb.lis3dh_stub1.response[7:0]
+@28
+dut3w_tb.lis3dh_stub1.misoff
+@22
+dut3w_tb.lis3dh_stub1.bit_count[3:0]
+dut3w_tb.lis3dh_stub1.shift_reg[7:0]
+@28
+dut3w_tb.lis3dh_stub1.oe
+dut3w_tb.lis3dh_stub1.rd
+@29
+dut3w_tb.lis3dh_stub1.spi3w
+@28
+dut3w_tb.lis3dh_stub1.spi3w_flag
+[pattern_trace] 1
+[pattern_trace] 0

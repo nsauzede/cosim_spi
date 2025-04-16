@@ -30,7 +30,7 @@
 
 `timescale 1ns / 1ps
 `ifndef DUT_TB_VCD
-`define DUT_TB_VCD "dut_tb.vcd"
+`define DUT_TB_VCD "dut3w_tb.vcd"
 `endif
 
 /*
@@ -42,7 +42,7 @@ How to test:
 // This will show how to change the flexible divider coefficient
 `define SPI_CHANGE_COEF
 
-module dut_tb;
+module dut3w_tb;
     localparam clk_period = 10;
 
     reg clk = 0;
@@ -70,7 +70,7 @@ module dut_tb;
     initial begin
         reset = 1;
         $dumpfile(`DUT_TB_VCD);
-        $dumpvars(0, dut_tb);
+        $dumpvars(0, dut3w_tb);
         #50       reset = 0;
 
 `ifdef SPI_CHANGE_COEF
