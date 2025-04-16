@@ -88,7 +88,7 @@ static int lis3dh_stub(int out_x_resp, int *out_x_l_flag, int csn, int sck, int 
             break;
     }
     sck_d = sck;
-    if (out_x_l_flag) { *out_x_l_flag = out_x_l_flagff; }
-    if (miso) { *miso = !csn && (state == RESPONDING) ? misoff : 1; }
+    if (out_x_l_flag) { *out_x_l_flag = !csn ? out_x_l_flagff : 0; }
+    if (miso) { *miso = (state == IDLE) ? Z : misoff; }
     return 0;
 }

@@ -44,7 +44,7 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
 
     output              spi_csn,          // SPI CSN output (active LOW)
     output              spi_sck,          // SPI clock output
-    output              spi_mosi,         // SPI master data output, slave data input
+    inout               spi_mosi,         // SPI master output slave input (default 4-wire); or m/s i/o (3-wire enabled)
     input               spi_miso          // SPI master data input, slave data output
 );
 `ifdef SPI_DIV_COEF

@@ -43,7 +43,7 @@ module lis3dh_stub (
 
     input               csn,                    // SPI chip select (active low)
     input               sck,                    // SPI clock
-    input               mosi,                   // SPI master out slave in
+    inout               mosi,                   // SPI master output slave input (default 4-wire); or m/s i/o (3-wire enabled)
     output              miso                    // SPI master in slave out
 );
     always @(posedge clk) begin

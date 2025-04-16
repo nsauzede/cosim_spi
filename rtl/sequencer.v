@@ -223,7 +223,7 @@ always @(posedge clk_in or negedge nrst)
 //                    if (spi_miso_data[7:0] != expected_data) begin
                     if (spi_miso_data[15:8] != expected_data) begin
 //                    $display("Bad Read response: %02x (wanted 0xda)", spi_miso_data[7:0]);
-                    $display("Bad Read response: %02x (wanted 0xda)", spi_miso_data[15:8]);
+                    $display("Bad Read response: %02x (wanted %02x)", spi_miso_data[15:8], expected_data);
                     $fatal(1);
                     end
                     expected_data <= expected_data + 32;

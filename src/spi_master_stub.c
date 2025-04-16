@@ -145,8 +145,8 @@ static int spi_master_stub(int div_coef, int nrst, int mosi_data, int *miso_data
 
     if (miso_data) { *miso_data = miso_dataff; }
     if (ready) { *ready = readyff; }
-    if (spi_csn) { *spi_csn = nrst ? spi_csnff : 1; }
-    if (spi_sck) { *spi_sck = nrst ? spi_sckff : 1; }
-    if (spi_mosi) { *spi_mosi = nrst ? spi_mosiff : 1; }
+    if (spi_csn) { *spi_csn = nrst ? spi_csnff : Z; }
+    if (spi_sck) { *spi_sck = nrst ? spi_sckff : Z; }
+    if (spi_mosi) { *spi_mosi = nrst ? spi_mosiff : Z; }
     return 0;
 }
