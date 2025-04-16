@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-`timescale 1ns / 1ps
+`timescale 1ns / 1ns
 /*
     SPI master
     - 3/4-wire mode support (4-wire by default)
@@ -64,9 +64,9 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
     input               spi_miso        // SPI master data input, slave data output
 );
 `ifdef SPI_DIV_COEF
-    localparam div_coef_ = `SPI_DIV_COEF;
+    localparam div_coef__ = `SPI_DIV_COEF;
 `else
-    localparam div_coef_ = (DIV_COEF == 0) ? 16'd10000 : DIV_COEF - 1;
+    localparam div_coef__ = (DIV_COEF == 0) ? 16'd10000 : DIV_COEF - 1;
 `endif
 
     localparam
@@ -107,7 +107,7 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
     // Frequency divider
     reg divider_out = 0;
     reg [15:0] divider = 0;
-    reg [15:0] div_coef = div_coef_;
+    reg [15:0] div_coef = div_coef__;
     reg configure = 0;
     always @(posedge clk_in) begin
         if (!nrst || configure) begin

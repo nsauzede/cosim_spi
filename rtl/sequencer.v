@@ -19,7 +19,7 @@
     Minor debug tweaks
     Copyright (c) 2025, Nicolas Sauzede <nicolas.sauzede@gmail.com>
 */
-`timescale 1ns / 1ps
+`timescale 1ns / 1ns
 `include "../rtl/config.vh"
 
 module sequencer (

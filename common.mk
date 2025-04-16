@@ -88,8 +88,6 @@ $(DUT_TB).vvp: $(RTLS) $(VPI)
 	iverilog $(IVOPT) -o $@ $(RTLS)
 
 VPI_CFLAGS := $(shell iverilog-vpi --cflags)
-# High-Z; akin to Verilog's 1'bz and iverilog VPI's vpiZ
-VPI_CFLAGS+=-DZ=2
 ifdef DEBUG
 VPI_CFLAGS+=-DDEBUG
 endif

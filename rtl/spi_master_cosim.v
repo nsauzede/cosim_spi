@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-`timescale 1ns / 1ps
+`timescale 1ns / 1ns
 `include "../rtl/config.vh"
 
 module spi_master #( parameter integer DIV_COEF = 0 ) (
@@ -47,11 +47,12 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
     input               spi_miso          // SPI master data input, slave data output
 );
 `ifdef SPI_DIV_COEF
-localparam div_coef = `SPI_DIV_COEF;
+localparam div_coef_ = `SPI_DIV_COEF;
 `else
-localparam div_coef = (DIV_COEF == 0) ? 16'd10000 : DIV_COEF - 1;
+localparam div_coef_ = (DIV_COEF == 0) ? 16'd10000 : DIV_COEF - 1;
 `endif
+reg [15:0] div_coef = div_coef_;
 always @(posedge clk_in or negedge nrst) begin
-    $spi_master_stub(div_coef, nrst, mosi_data, miso_data, nbits, request, ready, spi_csn, spi_sck, spi_mosi, spi_miso);
+    $spi_master(div_coef, nrst, mosi_data, miso_data, nbits, request, ready, spi_csn, spi_sck, spi_mosi, spi_miso);
 end
 endmodule

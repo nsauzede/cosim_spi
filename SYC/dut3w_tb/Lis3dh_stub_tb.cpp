@@ -28,25 +28,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-`timescale 1ns / 1ns
-`include "../rtl/config.vh"
+#include "Lis3dh_stub.cc"
 
-/*
-    Simple LIS3DH SPI stub (STMicroelectronics LIS3DH accelerometer)
-*/
+TESTCASE(TestLis3dh_stub)
 
-module lis3dh_stub (
-    input               clk,                    // System clock
+class Lis3dh_stubTest {
+public:
+    Lis3dh_stub* Lis3dh_stub1;
+    sc_signal<bool>             clk;
+    sc_signal<sc_uint<16> >     out_x_resp;
+    sc_signal<bool>             out_x_l_flag;
+    sc_signal<bool>             csn;
+    sc_signal<bool>             sck;
+    sc_signal_resolved          mosi;
+    sc_signal<bool>             miso;
 
-    input [15:0]        out_x_resp,
-    output              out_x_l_flag,
+    void SetUp() {
+        Lis3dh_stub1 = new Lis3dh_stub("Lis3dhStub1");
+        Lis3dh_stub1->clk(clk);
+        Lis3dh_stub1->out_x_resp(out_x_resp);
+        Lis3dh_stub1->out_x_l_flag(out_x_l_flag);
+        Lis3dh_stub1->csn(csn);
+        Lis3dh_stub1->sck(sck);
+        Lis3dh_stub1->mosi(mosi);
+        Lis3dh_stub1->miso(miso);
+    }
 
-    input               csn,                    // SPI chip select (active low)
-    input               sck,                    // SPI clock
-    inout               mosi,                   // SPI master output slave input (default 4-wire); or m/s i/o (3-wire enabled)
-    output              miso                    // SPI master in slave out
-);
-    always @(posedge clk) begin
-        $lis3dh_stub(out_x_resp, out_x_l_flag, csn, sck, mosi, miso);
-    end
-endmodule
+    void TearDown() {
+        delete Lis3dh_stub1;
+    }
+};

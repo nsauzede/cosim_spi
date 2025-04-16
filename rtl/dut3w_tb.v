@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-`timescale 1ns / 1ps
+`timescale 1ns / 1ns
 `ifndef DUT_TB_VCD
 `define DUT_TB_VCD "dut3w_tb.vcd"
 `endif

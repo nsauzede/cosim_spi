@@ -33,6 +33,7 @@
 */
 
 static int lis3dh_stub(int out_x_resp, int *out_x_l_flag, int csn, int sck, int *mosi, int *miso) {
+    const int Z = 2;    // High-Z; akin to Verilog's 1'bz and iverilog VPI's vpiZ
     static enum { IDLE = 0, RECEIVING = 1, PROCESSING = 2, RESPONDING = 3 } state = IDLE;
     static int sck_d = 1;
     static int bit_count = 0;

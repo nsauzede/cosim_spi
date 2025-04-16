@@ -30,7 +30,8 @@
 
 #include <stdio.h>
 
-static int spi_master_stub(int div_coef_, int nrst, int mosi_data, int *miso_data, int nbits, int request, int *ready, int *spi_csn, int *spi_sck, int *spi_mosi, int spi_miso) {
+static int spi_master(int *div_coef, int nrst, int mosi_data, int *miso_data, int nbits, int request, int *ready, int *spi_csn, int *spi_sck, int *spi_mosi, int spi_miso) {
+    const int Z = 2;    // High-Z; akin to Verilog's 1'bz and iverilog VPI's vpiZ
     typedef enum { STATE_Idle = 0, STATE_Run = 1, STATE_High = 2, STATE_Low = 3, STATE_Finish = 4, STATE_End = 5 } State_t;
     static State_t state = STATE_Idle;
     static int data_in_reg = 0;
@@ -62,19 +63,24 @@ static int spi_master_stub(int div_coef_, int nrst, int mosi_data, int *miso_dat
     int divider_out_pre = 0;
     static int divider_out = 0;
     static int configure = 0;
-    static int div_coef = -1;
-    if (div_coef == -1) div_coef = div_coef_;
+    static int div_coef__ = -1;
+#ifdef SPI_DIV_COEF
+    const int div_coef_ = SPI_DIV_COEF;
+#else
+    const int div_coef_ = 10000;
+#endif
+    if (div_coef__ == -1) div_coef__ = div_coef ? (!*div_coef ? div_coef_ : *div_coef - 1) : div_coef_;
 
     // Frequency divider
     if (!nrst || configure) {
         divider_pre = 0;
         divider_out_pre = 0;
         if (nrst && configure) {
-            div_coef = (nbits == 0) && ((mosi_data & (1 << 31)) && (mosi_data & (1 << 23))) ? mosi_data & 0xffff : div_coef;
-            //printf("Set div_coef=%x\n", div_coef);
+            div_coef__ = (nbits == 0) && ((mosi_data & (1 << 31)) && (mosi_data & (1 << 23))) ? mosi_data & 0xffff : div_coef__;
+            //printf("Set div_coef=%x\n", div_coef__);
         }
     } else {
-        if (divider_pre <= div_coef) {
+        if (divider_pre <= div_coef__) {
             divider_pre++;
             divider_out_pre = 0;
         } else {
@@ -212,5 +218,6 @@ static int spi_master_stub(int div_coef_, int nrst, int mosi_data, int *miso_dat
 #else
     if (spi_mosi) { *spi_mosi = oe ? spi_mosiff : Z; }
 #endif
+    if (div_coef) { *div_coef = div_coef__; }
     return 0;
 }

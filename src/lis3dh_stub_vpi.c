@@ -94,7 +94,7 @@ static int lis3dh_stub_calltf(char *user_data) {
             arg_val.value.scalar = miso;
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
         }
-        if (!strcmp(name, "mosi") && (mosi != Z)) {
+        if (!strcmp(name, "mosi") && (mosi != vpiZ)) {
             arg_val.value.scalar = mosi;
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
         }
