@@ -29,8 +29,8 @@
  */
 
 `timescale 1ns / 1ps
-`ifndef DUT_VCD
-`define DUT_VCD "dutcosim_tb.vcd"
+`ifndef DUT_TB_VCD
+`define DUT_TB_VCD "dutcosim_tb.vcd"
 `endif
 module dutcosim_tb;
     // Parameters
@@ -89,7 +89,7 @@ module dutcosim_tb;
     // Stimulus process
     initial begin
         reset = 1'b1;
-        $dumpfile(`DUT_VCD);
+        $dumpfile(`DUT_TB_VCD);
         $dumpvars(0, dutcosim_tb);
         #1e3       reset = 1'b0;
 //        #10       reset = 1'b0;

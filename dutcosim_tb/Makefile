@@ -28,71 +28,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-COSIM:=1
-GTKWAVE:=gtkwave
-
 DUT:=dutcosim
-SRC:=../src
-RTL:=../rtl
-RTLS:=$(RTL)/$(DUT)_tb.v
-RTLS+=$(RTL)/$(DUT).v
-RTLS+=$(RTL)/sequencer.v
-ifdef COSIM
-RTLS+=$(RTL)/spi_master_cosim.v
-RTLS+=$(RTL)/lis3dh_stub_cosim.v
-else
-RTLS+=$(RTL)/spi_master.v
-RTLS+=$(RTL)/lis3dh_stub.v
-endif
-IVOPT:=-DDUT_VCD=\"$(DUT)_tb.vcd\"
-IVOPT+=-DSPI=1
-IVOPT+=-DSIMULATION=1
-IVOPT+=-DBOARD_ID=0
-IVOPT+=-DBOARD_CK=32000000
-IVOPT+=-D__UARTSPEED__=115200
-IVOPT+=-Irtl
-ifdef COSIM
-# IVERILOG_VPI_MODULE_PATH=.
-# Cadence PLI Modules (Verilog-XL)
-# vvp -mcadpli a.out -cadpli=./product.so:my_boot
-IVOPT+=-L.
-VPI:=
-MLIS3DH:=lis3dh_vpi
-VPI+=$(MLIS3DH).vpi
-IVOPT+=-m $(MLIS3DH)
-MSPI_MASTER:=spi_master_vpi
-VPI+=$(MSPI_MASTER).vpi
-IVOPT+=-m $(MSPI_MASTER)
-endif
+DUT_TB:=$(DUT)_tb
+COSIM:=1
+RTL_MODULES:=$(DUT_TB).v $(DUT).v sequencer.v
+COSIM_MODULES:=spi_master lis3dh_stub
 
-#VALGRIND:=valgrind --leak-check=full --show-leak-kinds=all
-
-all: $(DUT)_tb.vcd
-
-view: $(DUT)_tb.vcd
-	$(GTKWAVE) ./$< ./$(DUT)_tb.gtkw &
-
-#DEBUG:=1
-ifdef DEBUG
-OUTP:=| tee $(COSIM)
-endif
-.PRECIOUS:$(DUT)_tb.vcd
-$(DUT)_tb.vcd: $(DUT)_tb.vvp $(VPI)
-	$(VALGRIND) vvp $(VVPOPT) $< $(OUTP)
-
-$(DUT)_tb.vvp: $(RTLS) $(VPI)
-	iverilog $(IVOPT) -o $@ $(RTLS)
-
-VPI_CFLAGS := $(shell iverilog-vpi --cflags)
-# High-Z; akin to Verilog's 1'bz and iverilog VPI's vpiZ
-VPI_CFLAGS+=-DZ=2
-ifdef DEBUG
-VPI_CFLAGS+=-DDEBUG
-endif
-%.o: $(SRC)/%.c
-	$(CC) -c $^ $(VPI_CFLAGS) -Wall -Werror
-%.vpi: %.o
-	iverilog-vpi $<
-
-clean:
-	$(RM) *.o *.vvp *.vpi $(DUT)_tb.vcd vgcore.*
+include ../common.mk

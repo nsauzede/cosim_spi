@@ -29,7 +29,7 @@
  */
 
 static struct {unsigned high, low; } sim_time = {0, 0};
-#include "spi_master_stub.c"
+#include "spi_master.c"
 
 #include <vpi_user.h>
 #include <string.h>

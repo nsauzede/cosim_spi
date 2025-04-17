@@ -28,10 +28,75 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-DUT_TB:=dut3w_tb
-SPI3WIRE:=1
-RTL_MODULES:=$(DUT_TB).v
-#RTL_MODULES+=spi_master.v lis3dh_stub.v
-COSIM_MODULES:=spi_master lis3dh_stub
+SRC:=../src
+RTL:=../rtl
+#COSIM:=1
+#SPI3WIRE:=1
+#DEBUG:=1
 
-include ../common.mk
+GTKWAVE:=gtkwave
+#VALGRIND:=valgrind --leak-check=full --show-leak-kinds=all
+
+TARGET:=$(DUT_TB).vcd
+
+RTLS:=$(patsubst %,$(RTL)/%,$(RTL_MODULES))
+ifdef COSIM
+COSIM_RTLS:=$(patsubst %,$(RTL)/%_cosim.v,$(COSIM_MODULES))
+else
+COSIM_RTLS:=$(patsubst %,$(RTL)/%.v,$(COSIM_MODULES))
+endif
+RTLS+=$(COSIM_RTLS)
+
+ifdef DEBUG
+OUTP:=| tee out_cosim$(COSIM)
+endif
+
+IVOPT:=-DDUT_TB_VCD=\"$(DUT_TB).vcd\"
+IVOPT+=-DSPI=1
+IVOPT+=-DSIMULATION=1
+IVOPT+=-DBOARD_ID=0
+IVOPT+=-DBOARD_CK=32000000
+IVOPT+=-D__UARTSPEED__=115200
+IVOPT+=-I$(RTL)
+
+ifdef SPI3WIRE
+ifeq ($(SPI3WIRE),1)
+$(DUT_TB).vvp: IVOPT+=-DSPI3WIREACTIVE
+endif
+$(DUT_TB).vvp: IVOPT+=-DSPI3WIRE
+endif
+
+ifdef COSIM
+# IVERILOG_VPI_MODULE_PATH=.
+# Cadence PLI Modules (Verilog-XL)
+# vvp -mcadpli a.out -cadpli=./product.so:my_boot
+IVOPT+=-L.
+VPI:=$(patsubst %,%_vpi.vpi,$(COSIM_MODULES))
+IVOPT+=$(patsubst %,-m %_vpi,$(COSIM_MODULES))
+endif
+
+all: $(TARGET)
+
+view: $(DUT_TB).vcd
+	$(GTKWAVE) ./$< ./$(DUT_TB).gtkw &
+
+.PRECIOUS:$(DUT_TB).vcd
+$(DUT_TB).vcd: $(DUT_TB).vvp $(VPI)
+	$(VALGRIND) vvp $(VVPOPT) $< $(OUTP)
+
+$(DUT_TB).vvp: $(RTLS) $(VPI)
+	iverilog $(IVOPT) -o $@ $(RTLS)
+
+VPI_CFLAGS := $(shell iverilog-vpi --cflags)
+# High-Z; akin to Verilog's 1'bz and iverilog VPI's vpiZ
+VPI_CFLAGS+=-DZ=2
+ifdef DEBUG
+VPI_CFLAGS+=-DDEBUG
+endif
+%.o: $(SRC)/%.c
+	$(CC) -c $^ $(VPI_CFLAGS) -Wall -Werror
+%.vpi: %.o
+	iverilog-vpi $<
+
+clean:
+	$(RM) *.o *.vvp *.vpi *.vcd vgcore.*
