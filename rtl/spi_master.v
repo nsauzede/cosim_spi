@@ -63,12 +63,11 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
     inout               spi_mosi,       // SPI master output slave input (default 4-wire); or m/s i/o (3-wire enabled)
     input               spi_miso        // SPI master data input, slave data output
 );
-`ifdef SPI_DIV_COEF
-    localparam div_coef_ = `SPI_DIV_COEF;
+`ifdef SPI3WIRE
+localparam PROFILE = "3W __";
 `else
-    localparam div_coef_ = (DIV_COEF == 0) ? 16'd10000 : DIV_COEF - 1;
+localparam PROFILE = "__ __";
 `endif
-
     localparam
         STATE_Idle = 0,
         STATE_Run = 1,
@@ -104,6 +103,11 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
     assign spi_csn = oe ? csnff : 1'bz;
     assign spi_sck = oe ? sckff : 1'bz;
 
+`ifdef SPI_DIV_COEF
+    localparam div_coef_ = `SPI_DIV_COEF;
+`else
+    localparam div_coef_ = (DIV_COEF == 0) ? 16'd10000 : DIV_COEF - 1;
+`endif
     // Frequency divider
     reg divider_out = 0;
     reg [15:0] divider = 0;
@@ -147,6 +151,9 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
             case (state)
                 STATE_Idle: begin
                     configure <= 0;
+                    csnff <= 1;
+                    sckff <= 1;
+                    mosiff <= 1;
                     if (request) begin
                         if (nbits == 5'd0) begin
 `ifdef SPI3WIRE

@@ -35,11 +35,10 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
     input               clk_in,           // Logic clock
     input               nrst,             // SPI is active when nreset is HIGH
 
+    input               request,          // Request to start transfer: Active HIGH
+    input  [4:0]        nbits,            // Number of bits (nbits=15 => 16; nbits=0 is reserved)
     input  [31:0]       mosi_data,        // Parallel FPGA data write to SPI
     output [31:0]       miso_data,        // Parallel FPGA data read from SPI
-    input  [4:0]        nbits,            // Number of bits: nbits==0 means 1 bit
-
-    input               request,          // Request to start transfer: Active HIGH
     output              ready,            // Active HIGH when transfer has finished
 
     output              spi_csn,          // SPI CSN output (active LOW)
@@ -47,12 +46,31 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
     inout               spi_mosi,         // SPI master output slave input (default 4-wire); or m/s i/o (3-wire enabled)
     input               spi_miso          // SPI master data input, slave data output
 );
-`ifdef SPI_DIV_COEF
-localparam div_coef = `SPI_DIV_COEF;
+`ifdef SPI3WIRE
+localparam PROFILE = "3W CO";
 `else
-localparam div_coef = (DIV_COEF == 0) ? 32'd10000 : DIV_COEF;
+localparam PROFILE = "__ CO";
 `endif
-always @(posedge clk_in or negedge nrst) begin
-    $spi_master_stub(div_coef, nrst, mosi_data, miso_data, nbits, request, ready, spi_csn, spi_sck, spi_mosi, spi_miso);
+`ifdef SPI_DIV_COEF
+localparam div_coef_ = `SPI_DIV_COEF;
+`else
+localparam div_coef_ = (DIV_COEF == 0) ? 16'd10000 : DIV_COEF - 1;
+`endif
+// Frequency divider
+reg [15:0] div_coef = div_coef_;
+reg [31:0] debug = 0;
+wire oe = debug[0];
+// we use a "wire+reg" in cosim mode for ready output,
+// else the VPI call modifies the reg one clock too early (iverilog-specific ?)
+wire readyff;
+reg readyff2 = 0;
+assign ready = readyff2;
+wire [31:0] miso_reg;
+reg [31:0] miso_regff = 0;
+
+always @(posedge clk_in) begin
+    $spi_master(div_coef, nrst, mosi_data, miso_data, nbits, request, readyff, spi_csn, spi_sck, spi_mosi, spi_miso, debug, miso_reg);
+    readyff2 <= readyff;
+    miso_regff <= miso_reg;
 end
 endmodule

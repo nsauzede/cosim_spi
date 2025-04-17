@@ -42,8 +42,10 @@ static int lis3dh_stub_compiletf(char *user_data) {
 }
 static int lis3dh_stub_calltf(char *user_data) {
     UNUSED(user_data);
-    int out_x_resp = 0, csn = 0, sck = 0, mosi = 0;
-    int out_x_l_flag = 0, miso = 1;
+    int out_x_resp = 0, csn = 0, sck = 0;
+    int out_x_l_flag = 0, mosi = 0, misoff = 1;
+    int state = 0, bit_count = 0, shift_reg = 0;
+//    int mosi_pre = 0;
     vpiHandle systfref, args_iter, arg_h;
     s_vpi_value arg_val;
     // Get argument handles
@@ -60,6 +62,10 @@ static int lis3dh_stub_calltf(char *user_data) {
             vpi_printf("Signal %s value: %d\n", name, out_x_resp);
 #endif
             continue;
+        } else if (!strcmp(name, "mosi")) {
+            arg_val.format = vpiScalarVal;
+            vpi_get_value(arg_h, &arg_val);
+            mosi = arg_val.value.scalar;
         }
         arg_val.format = vpiScalarVal;
         vpi_get_value(arg_h, &arg_val);
@@ -75,11 +81,10 @@ static int lis3dh_stub_calltf(char *user_data) {
         vpi_printf("Signal %s value: %s\n", name, val_str);
 #endif
         if (!strcmp(name, "sck")) { sck = arg_val.value.scalar; }
-        if (!strcmp(name, "csn")) { csn = arg_val.value.scalar; }
-        if (!strcmp(name, "mosi")) { mosi = arg_val.value.scalar; }
+        else if (!strcmp(name, "csn")) { csn = arg_val.value.scalar; }
+        else if (!strcmp(name, "mosi")) { mosi = arg_val.value.scalar; }
     }
-    lis3dh_stub(out_x_resp, &out_x_l_flag, csn, sck, mosi, &miso);
-    arg_val.format = vpiScalarVal;
+    lis3dh_stub(out_x_resp, &out_x_l_flag, csn, sck, &mosi, &misoff, &state, &bit_count, &shift_reg);
     // Get argument handles
     systfref = vpi_handle(vpiSysTfCall, NULL);
     args_iter = vpi_iterate(vpiArgument, systfref);
@@ -87,11 +92,28 @@ static int lis3dh_stub_calltf(char *user_data) {
     while ((arg_h = vpi_scan(args_iter)) != NULL) {
         const char *name = vpi_get_str(vpiName, arg_h);
         if (!strcmp(name, "out_x_l_flag")) {
+            arg_val.format = vpiScalarVal;
             arg_val.value.scalar = out_x_l_flag;
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
-        }
-        if (!strcmp(name, "miso")) {
-            arg_val.value.scalar = miso;
+        } else if (!strcmp(name, "misoff")) {
+            arg_val.format = vpiScalarVal;
+            arg_val.value.scalar = misoff;
+            vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
+        } else if (!strcmp(name, "mosi")) {
+            arg_val.format = vpiScalarVal;
+            arg_val.value.scalar = mosi;
+            vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
+        } else if (!strcmp(name, "state")) {
+            arg_val.format = vpiIntVal;
+            arg_val.value.integer = state;
+            vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
+        } else if (!strcmp(name, "bit_count")) {
+            arg_val.format = vpiIntVal;
+            arg_val.value.integer = bit_count;
+            vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
+        } else if (!strcmp(name, "shift_reg")) {
+            arg_val.format = vpiIntVal;
+            arg_val.value.integer = shift_reg;
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
         }
     }

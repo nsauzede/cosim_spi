@@ -1,22 +1,32 @@
 [*]
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
-[*] Wed Apr 16 21:51:27 2025
+[*] Sat Apr 19 17:07:38 2025
 [*]
 [dumpfile] "dutcosim_tb.vcd"
-[dumpfile_mtime] "Wed Apr 16 21:51:23 2025"
-[dumpfile_size] 203074
+[dumpfile_mtime] "Sat Apr 19 17:07:29 2025"
+[dumpfile_size] 420357
 [savefile] "dutcosim_tb.gtkw"
 [timestart] 0
-[size] 1920 341
+[size] 1920 472
 [pos] -1 -1
-*-22.843784 1865000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-22.843784 1855 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] dutcosim_tb.
+[treeopen] dutcosim_tb.dutcosim1.
 [sst_width] 290
 [signals_width] 240
 [sst_expanded] 1
-[sst_vpaned_height] 58
+[sst_vpaned_height] 92
+@820
+dutcosim_tb.dutcosim1.spi_master1.PROFILE
+@420
+dutcosim_tb.dutcosim1.spi_master1.DIV_COEF
+@23
+dutcosim_tb.dutcosim1.spi_master1.div_coef[15:0]
 @28
 dutcosim_tb.clk
+dutcosim_tb.dutcosim1.sequencer1.spi_ready
+dutcosim_tb.dutcosim1.sequencer1.spi_request
+dutcosim_tb.dutcosim1.sequencer1.spi_requestff
 dutcosim_tb.spi_csn
 dutcosim_tb.spi_sck
 dutcosim_tb.spi_mosi
@@ -25,5 +35,17 @@ dutcosim_tb.spi_miso
 dutcosim_tb.leds[7:0]
 @28
 dutcosim_tb.reset
+@200
+-spi_master
+@28
+dutcosim_tb.dutcosim1.spi_master1.ready
+@22
+dutcosim_tb.dutcosim1.spi_master1.miso_data[31:0]
+@200
+-sequencer
+@22
+dutcosim_tb.dutcosim1.sequencer1.state[3:0]
+@28
+dutcosim_tb.dutcosim1.sequencer1.spi_ready
 [pattern_trace] 1
 [pattern_trace] 0

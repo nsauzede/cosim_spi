@@ -37,15 +37,16 @@ static struct {unsigned high, low; } sim_time = {0, 0};
 #define UNUSED(v) v = v
 //#define SHOW_SIGNALS
 
-static int spi_master_stub_compiletf(char *user_data) {
+static int spi_master_compiletf(char *user_data) {
     UNUSED(user_data);
     return 0;
 }
-static int spi_master_stub_calltf(char *user_data) {
+static int spi_master_calltf(char *user_data) {
     UNUSED(user_data);
     int div_coef = 0;
     int nrst = 0, mosi_data = 0, nbits = 0, request = 0, spi_miso = 0;
-    int miso_data = 0, ready = 0, spi_csn = 0, spi_sck = 0, spi_mosi = 0;
+    int miso_data = 0, readyff = 0, spi_csn = 0, spi_sck = 0, spi_mosi = 0;
+    int debug = 0, miso_reg = 0;
     vpiHandle systfref, args_iter, arg_h;
     s_vpi_value arg_val;
     systfref = vpi_handle(vpiSysTfCall, NULL);
@@ -76,6 +77,10 @@ static int spi_master_stub_calltf(char *user_data) {
             arg_val.format = vpiScalarVal;
             vpi_get_value(arg_h, &arg_val);
             spi_miso = arg_val.value.scalar;
+        } else if (!strcmp(name, "spi_mosi")) {
+            arg_val.format = vpiScalarVal;
+            vpi_get_value(arg_h, &arg_val);
+            spi_mosi = arg_val.value.scalar;
         }
     }
   s_vpi_time time_s;
@@ -85,18 +90,22 @@ static int spi_master_stub_calltf(char *user_data) {
   sim_time.low = time_s.low;
 //  vpi_printf("Current simulation time: %u%u\n", time_s.high, time_s.low);
 //  vpi_printf("Current simulation time size: %u %u\n", sizeof(time_s.high), sizeof(time_s.low));
-    spi_master_stub(div_coef, nrst, mosi_data, &miso_data, nbits, request, &ready, &spi_csn, &spi_sck, &spi_mosi, spi_miso);
+    spi_master(&div_coef, nrst, mosi_data, &miso_data, nbits, request, &readyff, &spi_csn, &spi_sck, &spi_mosi, spi_miso, &debug, &miso_reg);
     systfref = vpi_handle(vpiSysTfCall, NULL);
     args_iter = vpi_iterate(vpiArgument, systfref);
     while ((arg_h = vpi_scan(args_iter)) != NULL) {
         const char *name = vpi_get_str(vpiName, arg_h);
-        if (!strcmp(name, "miso_data")) {
+        if (!strcmp(name, "div_coef")) {
+            arg_val.format = vpiIntVal;
+            arg_val.value.integer = div_coef;
+            vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
+        } else if (!strcmp(name, "miso_data")) {
             arg_val.format = vpiIntVal;
             arg_val.value.integer = miso_data;
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
-        } else if (!strcmp(name, "ready")) {
+        } else if (!strcmp(name, "readyff")) {
             arg_val.format = vpiScalarVal;
-            arg_val.value.scalar = ready;
+            arg_val.value.scalar = readyff;
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
         } else if (!strcmp(name, "spi_csn")) {
             arg_val.format = vpiScalarVal;
@@ -110,27 +119,35 @@ static int spi_master_stub_calltf(char *user_data) {
             arg_val.format = vpiScalarVal;
             arg_val.value.scalar = spi_mosi;
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
+        } else if (!strcmp(name, "debug")) {
+            arg_val.format = vpiIntVal;
+            arg_val.value.integer = debug;
+            vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
+        } else if (!strcmp(name, "miso_reg")) {
+            arg_val.format = vpiIntVal;
+            arg_val.value.integer = miso_reg;
+            vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
         }
     }
     return 0;
 }
 
-static void spi_master_stub_register(void) {
+static void spi_master_register(void) {
 //    vpi_printf("%s\n", __func__);
     s_vpi_systf_data tf_data;
     memset(&tf_data, 0, sizeof(tf_data));
 
     tf_data.type      = vpiSysTask;
     tf_data.sysfunctype = vpiSysTask;
-    tf_data.tfname    = "$spi_master_stub";
-    tf_data.calltf    = spi_master_stub_calltf;
-    tf_data.compiletf = spi_master_stub_compiletf;
+    tf_data.tfname    = "$spi_master";
+    tf_data.calltf    = spi_master_calltf;
+    tf_data.compiletf = spi_master_compiletf;
     tf_data.sizetf    = 0;
     tf_data.user_data = 0;
     vpi_register_systf(&tf_data);
 }
 
 void (*vlog_startup_routines[])(void) = {
-   spi_master_stub_register,
+   spi_master_register,
    0
 };

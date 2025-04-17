@@ -46,7 +46,29 @@ module lis3dh_stub (
     inout               mosi,                   // SPI master output slave input (default 4-wire); or m/s i/o (3-wire enabled)
     output              miso                    // SPI master in slave out
 );
-    always @(posedge clk) begin
-        $lis3dh_stub(out_x_resp, out_x_l_flag, csn, sck, mosi, miso);
-    end
+`ifdef SPI3WIRE
+localparam PROFILE = "3W CO";
+`else
+localparam PROFILE = "__ CO";
+`endif
+// we use a "wire+reg" in cosim mode for miso output,
+// else the VPI call modifies the reg one clock too early (iverilog-specific ?)
+wire misoff;
+reg misoff2 = 0;
+assign miso = misoff2;
+wire [1:0] state;
+reg [1:0] stateff = 0;
+wire [3:0] bit_count;
+reg [3:0] bit_countff = 0;
+wire [7:0] shift_reg;
+reg [7:0] shift_regff = 0;
+
+// must be sensitive to both clk edges else we only update mosi half the time
+always @(posedge clk or negedge clk) begin
+    $lis3dh_stub(out_x_resp, out_x_l_flag, csn, sck, mosi, misoff, state, bit_count, shift_reg);
+    misoff2 <= misoff;
+    stateff <= state;
+    bit_countff <= bit_count;
+    shift_regff <= shift_reg;
+end
 endmodule

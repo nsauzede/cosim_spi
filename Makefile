@@ -28,8 +28,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-.PHONY: all clean
-all clean:
+.PHONY: all clean view
+all clean view:
 	for d in dutcosim_tb dut3w_tb; do \
 	( cd $$d && $(MAKE) $@ || exit 1) || exit 1; \
 	done
