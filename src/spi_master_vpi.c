@@ -76,6 +76,10 @@ static int spi_master_stub_calltf(char *user_data) {
             arg_val.format = vpiScalarVal;
             vpi_get_value(arg_h, &arg_val);
             spi_miso = arg_val.value.scalar;
+        } else if (!strcmp(name, "spi_mosi")) {
+            arg_val.format = vpiScalarVal;
+            vpi_get_value(arg_h, &arg_val);
+            spi_mosi = arg_val.value.scalar;
         }
     }
   s_vpi_time time_s;

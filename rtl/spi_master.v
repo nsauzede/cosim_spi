@@ -147,6 +147,9 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
             case (state)
                 STATE_Idle: begin
                     configure <= 0;
+                    csnff <= 1;
+                    sckff <= 1;
+                    mosiff <= 1;
                     if (request) begin
                         if (nbits == 5'd0) begin
 `ifdef SPI3WIRE

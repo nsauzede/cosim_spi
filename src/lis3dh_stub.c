@@ -32,7 +32,7 @@
     Simple LIS3DH SPI stub (STMicroelectronics LIS3DH accelerometer)
 */
 
-static int lis3dh_stub(int out_x_resp, int *out_x_l_flag, int csn, int sck, int mosi, int *miso) {
+static int lis3dh_stub(int out_x_resp, int *out_x_l_flag, int csn, int sck, int *mosi, int *miso) {
     static enum { IDLE = 0, RECEIVING = 1, PROCESSING = 2, RESPONDING = 3 } state = IDLE;
     static int sck_d = 1;
     static int bit_count = 0;
@@ -40,20 +40,34 @@ static int lis3dh_stub(int out_x_resp, int *out_x_l_flag, int csn, int sck, int 
     static int misoff = 1;
     static int response = 0;
     static int out_x_l_flagff = 0;
+#ifdef SPI3WIRE
+    static int rd = 0;
+    static int oe = 0;
+    static int spi3w_flag = 0;
+    static int spi3w = 0;
+    static int spi3wff = 0;
+#endif
     switch (state) {
         case IDLE:
+#ifdef SPI3WIRE
+            oe = 0;
+            rd = 0;
+#endif
             bit_count = 0;
             shift_reg = 0;
             misoff = 1;
             response = 0;
             out_x_l_flagff = 0;
             if (!csn && !sck) {
+#ifdef SPI3WIRE
+                rd = bit_count == 0 ? (mosi ? *mosi : 0) : rd;
+#endif
                 state = RECEIVING;
             }
             break;
         case RECEIVING:
             if (sck && !sck_d) {
-                shift_reg = (shift_reg << 1) | mosi;
+                shift_reg = (shift_reg << 1) | (mosi ? *mosi : 0);
                 bit_count++;
                 if (bit_count == 8) {
                     state = PROCESSING;
@@ -63,17 +77,32 @@ static int lis3dh_stub(int out_x_resp, int *out_x_l_flag, int csn, int sck, int 
         case PROCESSING:
             if ((shift_reg & 0x3f) == 0xf) {
                 response = 0x33;
+#ifdef SPI3WIRE
+            } else if ((shift_reg & 0x3f) == 0x23) {
+                spi3w_flag = 1;
+                response = 0;
+#endif
             } else if ((shift_reg & 0x3f) == 0x28) {
                 response = (out_x_resp & 0xff);
                 out_x_l_flagff = 1;
+            } else {
+                response = 0;
             }
             state = RESPONDING;
             bit_count = 0;
             break;
         case RESPONDING:
             if (csn) {
+#ifdef SPI3WIRE
+                spi3w_flag = 0;
+                spi3w = spi3wff;
+                oe = 0;
+#endif
                 state = IDLE;
             } else if (!sck && sck_d) {
+#ifdef SPI3WIRE
+                oe = 1;
+#endif
                 misoff = !!(response & 0x80);
                 response <<= 1;
                 bit_count++;
@@ -84,11 +113,24 @@ static int lis3dh_stub(int out_x_resp, int *out_x_l_flag, int csn, int sck, int 
                         response = 0;
                     }
                 }
+#ifdef SPI3WIRE
+                if (spi3w_flag) {
+                    if (bit_count == 8) {
+                        spi3wff = (mosi ? *mosi : 0);
+                        spi3w_flag = 0;
+                    }
+                }
+#endif
             }
             break;
     }
     sck_d = sck;
     if (out_x_l_flag) { *out_x_l_flag = !csn ? out_x_l_flagff : 0; }
+#ifdef SPI3WIRE
+    if (mosi) { *mosi = spi3w && oe && rd ? misoff : Z; }
+    if (miso) { *miso = !spi3w && oe && rd ? misoff : !spi3w && !oe && rd ? 1 : Z; }
+#else
     if (miso) { *miso = (state == IDLE) ? Z : misoff; }
+#endif
     return 0;
 }

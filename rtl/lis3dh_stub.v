@@ -44,7 +44,7 @@ module lis3dh_stub (
 
     input               csn,                    // SPI chip select (active low)
     input               sck,                    // SPI clock
-    inout               mosi,                   // 4-wire: SPI master out slave in (default/standard)
+    inout               mosi,                   // SPI master output slave input (default 4-wire); or m/s i/o (3-wire enabled)
     output              miso                    // SPI master in slave out
 );
 
@@ -72,7 +72,7 @@ module lis3dh_stub (
 
 //    assign miso = state == IDLE ? 1'b1 : misoff;
 //    assign miso = !spi3w && (state != IDLE) ? misoff : 1'b1;
-    assign miso = !spi3w && oe && rd ? misoff : !spi3w && !oe && rd ? 1'b0 : 1'bz;
+    assign miso = !spi3w && oe && rd ? misoff : !spi3w && !oe && rd ? 1'b1 : 1'bz;
 //    assign miso = state == IDLE ? 1'bz : misoff;
 //    assign miso = !spi3w && oe && rd ? misoff : 1'bz;
 `else

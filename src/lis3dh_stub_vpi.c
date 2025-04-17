@@ -42,8 +42,8 @@ static int lis3dh_stub_compiletf(char *user_data) {
 }
 static int lis3dh_stub_calltf(char *user_data) {
     UNUSED(user_data);
-    int out_x_resp = 0, csn = 0, sck = 0, mosi = 0;
-    int out_x_l_flag = 0, miso = 1;
+    int out_x_resp = 0, csn = 0, sck = 0;
+    int out_x_l_flag = 0, mosi = 0, miso = 1;
     vpiHandle systfref, args_iter, arg_h;
     s_vpi_value arg_val;
     // Get argument handles
@@ -78,7 +78,7 @@ static int lis3dh_stub_calltf(char *user_data) {
         if (!strcmp(name, "csn")) { csn = arg_val.value.scalar; }
         if (!strcmp(name, "mosi")) { mosi = arg_val.value.scalar; }
     }
-    lis3dh_stub(out_x_resp, &out_x_l_flag, csn, sck, mosi, &miso);
+    lis3dh_stub(out_x_resp, &out_x_l_flag, csn, sck, &mosi, &miso);
     arg_val.format = vpiScalarVal;
     // Get argument handles
     systfref = vpi_handle(vpiSysTfCall, NULL);
@@ -92,6 +92,10 @@ static int lis3dh_stub_calltf(char *user_data) {
         }
         if (!strcmp(name, "miso")) {
             arg_val.value.scalar = miso;
+            vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
+        }
+        if (!strcmp(name, "mosi") && (mosi != Z)) {
+            arg_val.value.scalar = mosi;
             vpi_put_value(arg_h, &arg_val, NULL, vpiNoDelay);
         }
     }

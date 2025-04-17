@@ -93,6 +93,9 @@ VPI_CFLAGS+=-DZ=2
 ifdef DEBUG
 VPI_CFLAGS+=-DDEBUG
 endif
+ifdef SPI3WIRE
+VPI_CFLAGS+=-DSPI3WIRE
+endif
 %.o: $(SRC)/%.c
 	$(CC) -c $^ $(VPI_CFLAGS) -Wall -Werror
 %.vpi: %.o

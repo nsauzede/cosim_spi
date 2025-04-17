@@ -30,15 +30,18 @@
 
 #include <stdio.h>
 
-static int spi_master_stub(int div_coef, int nrst, int mosi_data, int *miso_data, int nbits, int request, int *ready, int *spi_csn, int *spi_sck, int *spi_mosi, int spi_miso) {
-    static int divider_pre = 0;
-    int divider_out_pre = 0;
-    static int divider_out = 0;
+static int spi_master_stub(int div_coef_, int nrst, int mosi_data, int *miso_data, int nbits, int request, int *ready, int *spi_csn, int *spi_sck, int *spi_mosi, int spi_miso) {
     typedef enum { STATE_Idle = 0, STATE_Run = 1, STATE_High = 2, STATE_Low = 3, STATE_Finish = 4, STATE_End = 5 } State_t;
     static State_t state = STATE_Idle;
     static int data_in_reg = 0;
     static int nbits_reg = 0;
     static int bit_counter = 0;
+    static int oe = 0;
+#ifdef SPI3WIRE
+    static int rd = 0;
+    static int spi3w = 0;
+    static int rd_tri = 0;
+#endif
 #ifdef DEBUG
     static int divider = 0;
     State_t stateff = state;
@@ -54,10 +57,38 @@ static int spi_master_stub(int div_coef, int nrst, int mosi_data, int *miso_data
     static int spi_sckff = 1;
     static int spi_mosiff = 1;
 
-    if (!nrst) {
+    // Frequency divider
+    static int divider_pre = 0;
+    int divider_out_pre = 0;
+    static int divider_out = 0;
+    static int configure = 0;
+    static int div_coef = -1;
+    if (div_coef == -1) div_coef = div_coef_;
+
+    // Frequency divider
+    if (!nrst || configure) {
         divider_pre = 0;
         divider_out_pre = 0;
+        if (nrst && configure) {
+            div_coef = (nbits == 0) && ((mosi_data & (1 << 31)) && (mosi_data & (1 << 23))) ? mosi_data & 0xffff : div_coef;
+            //printf("Set div_coef=%x\n", div_coef);
+        }
+    } else {
+        if (divider_pre <= div_coef) {
+            divider_pre++;
+            divider_out_pre = 0;
+        } else {
+            divider_pre = 0;
+            divider_out_pre = 1;
+        }
+    }
 
+    if (!nrst ) {
+#ifdef SPI3WIRE
+        rd_tri = 0;
+        rd = 0;
+#endif
+        oe = 0;
         spi_csnff = 1;
         spi_sckff = 1;
         spi_mosiff = 1;
@@ -70,31 +101,36 @@ static int spi_master_stub(int div_coef, int nrst, int mosi_data, int *miso_data
 
         state = STATE_Idle;
     } else {
-        if (divider_pre != div_coef) {
-            divider_pre++;
-            divider_out_pre = 0;
-        } else {
-            divider_pre = 0;
-            divider_out_pre = 1;
-        }
-
         switch (state) {
             case STATE_Idle:
+                configure = 0;
                 spi_csnff = 1;
                 spi_sckff = 1;
                 spi_mosiff = 1;
                 if (request) {
-                    state = STATE_Run;
-                    readyff = 0;
-                    spi_csnff = 0;
-                    data_in_reg = mosi_data;
-                    nbits_reg = nbits;
-                    bit_counter = nbits;
-                    miso_dataff = 0;
+                    if (nbits == 0) {
+#ifdef SPI3WIRE
+                        spi3w = (nbits == 0) && ((mosi_data & (1 << 31)) && (mosi_data & (1 << 24))) ? !!(mosi_data & (1 << 16)) : spi3w;
+                        //printf("Set spi3w=%d\n", spi3w);
+#endif
+                        configure = 1;
+                    } else {
+                        oe = 1;
+                        state = STATE_Run;
+                        readyff = 0;
+                        spi_csnff = 0;
+                        data_in_reg = mosi_data;
+                        nbits_reg = nbits;
+                        bit_counter = nbits;
+                        miso_dataff = 0;
+                    }
                 }
                 break;
             case STATE_Run:
                 if (nbits_reg == 0x1f) {
+#ifdef SPI3WIRE
+                    rd = !!(data_in_reg & (1 << 31));
+#endif
                     state = STATE_High;
                 } else {
                     data_in_reg <<= 1;
@@ -103,36 +139,60 @@ static int spi_master_stub(int div_coef, int nrst, int mosi_data, int *miso_data
                 break;
             case STATE_High:
                 if (divider_out) {
-                    state = STATE_Low;
                     spi_sckff = 0;
                     spi_mosiff = 1 & (data_in_reg >> 31);
+                    state = STATE_Low;
+#ifdef SPI3WIRE
+                    if (bit_counter == (nbits - 8)) {
+                        if (spi3w && rd) {
+                            rd_tri = 1;
+                        }
+                    }
+#endif
                 }
                 break;
             case STATE_Low:
                 if (divider_out) {
+                    spi_sckff = 1;
+#ifdef SPI3WIRE
+                    miso_dataff = ((miso_dataff & 0x7fffffff) << 1) | (spi3w ? (spi_mosi ? *spi_mosi : Z) : rd ? spi_miso : 0);
+                    //printf("Read from %s\n", spi3w ? (spi_mosi ? "MOSI" : "Z") : rd ? "MISO" : "0");
+#else
+                    miso_dataff = ((miso_dataff & 0x7fffffff) << 1) | spi_miso;
+#endif
                     if (bit_counter == 0) {
                         state = STATE_Finish;
                     } else {
-                        state = STATE_High;
+#ifdef SPI3WIRE
+                        if (bit_counter == (nbits - 8)) {
+                            if (spi3w && rd) {
+                                rd_tri = 1;
+                            }
+                        }
+#endif
                         bit_counter--;
                         data_in_reg <<= 1;
+                        state = STATE_High;
                     }
-                    spi_sckff = 1;
-                    miso_dataff = ((miso_dataff & 0x7fffffff) << 1) | spi_miso;
                 }
                 break;
             case STATE_Finish:
                 if (divider_out) {
-                    state = STATE_End;
                     spi_csnff = 1;
                     spi_sckff = 1;
                     spi_mosiff = 0;
+                    state = STATE_End;
                 }
                 break;
             case STATE_End:
                 if (divider_out) {
-                    state = STATE_Idle;
                     readyff = 1;
+                    oe = 0;
+#ifdef SPI3WIRE
+                    rd = 0;
+                    rd_tri = 0;
+#endif
+                    state = STATE_Idle;
                 }
                 break;
         }
@@ -147,6 +207,10 @@ static int spi_master_stub(int div_coef, int nrst, int mosi_data, int *miso_data
     if (ready) { *ready = readyff; }
     if (spi_csn) { *spi_csn = nrst ? spi_csnff : Z; }
     if (spi_sck) { *spi_sck = nrst ? spi_sckff : Z; }
-    if (spi_mosi) { *spi_mosi = nrst ? spi_mosiff : Z; }
+#ifdef SPI3WIRE
+    if (spi_mosi) { *spi_mosi = !oe || (spi3w && rd_tri) ? Z : spi_mosiff; }
+#else
+    if (spi_mosi) { *spi_mosi = oe ? spi_mosiff : Z; }
+#endif
     return 0;
 }

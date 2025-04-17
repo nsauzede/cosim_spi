@@ -35,11 +35,10 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
     input               clk_in,           // Logic clock
     input               nrst,             // SPI is active when nreset is HIGH
 
+    input               request,          // Request to start transfer: Active HIGH
+    input  [4:0]        nbits,            // Number of bits (nbits=15 => 16; nbits=0 is reserved)
     input  [31:0]       mosi_data,        // Parallel FPGA data write to SPI
     output [31:0]       miso_data,        // Parallel FPGA data read from SPI
-    input  [4:0]        nbits,            // Number of bits: nbits==0 means 1 bit
-
-    input               request,          // Request to start transfer: Active HIGH
     output              ready,            // Active HIGH when transfer has finished
 
     output              spi_csn,          // SPI CSN output (active LOW)
@@ -50,7 +49,7 @@ module spi_master #( parameter integer DIV_COEF = 0 ) (
 `ifdef SPI_DIV_COEF
 localparam div_coef = `SPI_DIV_COEF;
 `else
-localparam div_coef = (DIV_COEF == 0) ? 32'd10000 : DIV_COEF;
+localparam div_coef = (DIV_COEF == 0) ? 16'd10000 : DIV_COEF - 1;
 `endif
 always @(posedge clk_in or negedge nrst) begin
     $spi_master_stub(div_coef, nrst, mosi_data, miso_data, nbits, request, ready, spi_csn, spi_sck, spi_mosi, spi_miso);
