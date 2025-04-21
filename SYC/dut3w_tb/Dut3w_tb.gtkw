@@ -1,0 +1,78 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Mon Apr 21 22:23:49 2025
+[*]
+[dumpfile] "Dut3w_tb.vcd"
+[dumpfile_mtime] "Mon Apr 21 22:23:11 2025"
+[dumpfile_size] 34950
+[savefile] "Dut3w_tb.gtkw"
+[timestart] 0
+[size] 1918 504
+[pos] -1 -1
+*-19.121365 655000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[markername] AA
+[markername] BB
+[markername] CC
+[markername] DD
+[markername] EE
+[markername] FF
+[markername] GG
+[markername] HH
+[markername] II
+[markername] JJ
+[markername] KK
+[markername] LL
+[markername] MM
+[markername] NN
+[markername] OO
+[markername] PP
+[markername] QQ
+[markername] RR
+[markername] SS
+[markername] TT
+[markername] UU
+[markername] VV
+[markername] WW
+[markername] XX
+[markername] YY
+[markername] ZZ
+[treeopen] SystemC.
+[treeopen] SystemC.Dut3w_tb.
+[sst_width] 290
+[signals_width] 214
+[sst_expanded] 1
+[sst_vpaned_height] 107
+@820
+SystemC.Dut3w_tb.Spi_master.PROFILE[63:0]
+@28
+SystemC.Dut3w_tb.Spi_master.clk
+SystemC.Dut3w_tb.reset
+@22
+SystemC.Dut3w_tb.Spi_master.miso_data[31:0]
+SystemC.Dut3w_tb.Spi_master.mosi_data[31:0]
+SystemC.Dut3w_tb.Spi_master.div_coef[15:0]
+@28
+SystemC.Dut3w_tb.Spi_master.ready
+SystemC.Dut3w_tb.Spi_master.request
+SystemC.Dut3w_tb.Spi_master.csn
+SystemC.Dut3w_tb.Spi_master.sck
+SystemC.Dut3w_tb.Spi_master.mosi
+SystemC.Dut3w_tb.Spi_master.miso
+@22
+SystemC.Dut3w_tb.Spi_master.nbits[4:0]
+@28
+SystemC.Dut3w_tb.Spi_master.oe
+@200
+-lis3dh
+@28
+SystemC.Dut3w_tb.Lis3dh_stub.state[1:0]
+@22
+SystemC.Dut3w_tb.Lis3dh_stub.bit_count[3:0]
+SystemC.Dut3w_tb.Lis3dh_stub.shift_reg[7:0]
+@28
+SystemC.Dut3w_tb.Lis3dh_stub.rd
+SystemC.Dut3w_tb.Lis3dh_stub.oe
+@29
+SystemC.Dut3w_tb.Lis3dh_stub.spi3w
+[pattern_trace] 1
+[pattern_trace] 0

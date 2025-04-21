@@ -32,7 +32,7 @@
     Simple LIS3DH SPI stub (STMicroelectronics LIS3DH accelerometer)
 */
 
-static int lis3dh_stub(int out_x_resp, int *out_x_l_flag, int csn, int sck, int *mosi, int *miso, int *state_, int *bit_count_, int *shift_reg_) {
+static int lis3dh_stub(int out_x_resp, int *out_x_l_flag, int csn, int sck, int *mosi, int *miso, int *state_, int *bit_count_, int *shift_reg_, int *rd_, int *oe_, int *spi3w_) {
     const int Z = 2;    // High-Z; akin to Verilog's 1'bz and iverilog VPI's vpiZ
     static enum { IDLE = 0, RECEIVING = 1, PROCESSING = 2, RESPONDING = 3 } state = IDLE;
     static int stateff = 0;
@@ -45,11 +45,11 @@ static int lis3dh_stub(int out_x_resp, int *out_x_l_flag, int csn, int sck, int 
 //    int mosiff = mosi ? *mosi : Z;
     static int response = 0;
     static int out_x_l_flagff = 0;
-#ifdef SPI3WIRE
     static int rd = 0;
     static int oe = 0;
-    static int spi3w_flag = 0;
     static int spi3w = 0;
+#ifdef SPI3WIRE
+    static int spi3w_flag = 0;
     static int spi3wff = 0;
 #endif
     switch (state) {
@@ -136,6 +136,9 @@ static int lis3dh_stub(int out_x_resp, int *out_x_l_flag, int csn, int sck, int 
 #else
     if (miso) { *miso = (state == IDLE) ? Z : misoff; }
 #endif
+    if (rd_) { *rd_ = rd; }
+    if (oe_) { *oe_ = oe; }
+    if (spi3w_) { *spi3w_ = spi3w; }
     if (state_) { *state_ = stateff; }
     if (bit_count_) { *bit_count_ = bit_countff; }
     if (shift_reg_) { *shift_reg_ = shift_regff; }

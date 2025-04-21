@@ -48,9 +48,9 @@ module lis3dh_stub (
     output              miso                    // SPI master in slave out
 );
 `ifdef SPI3WIRE
-localparam PROFILE = "3W __";
+    localparam PROFILE = "3W __";
 `else
-localparam PROFILE = "__ __";
+    localparam PROFILE = "__ __";
 `endif
     localparam
         IDLE = 0,

@@ -44,46 +44,46 @@ module dutcosim #(parameter integer SPI_DIV_COEF = 0) (
     input clk
 );
 
-wire [31:0] spi_mosi_data;
-wire [31:0] spi_miso_data;
-wire [4:0] spi_nbits;
-wire spi_request;
-wire spi_ready;
-assign tx = 1;
+    wire [31:0] spi_mosi_data;
+    wire [31:0] spi_miso_data;
+    wire [4:0] spi_nbits;
+    wire spi_request;
+    wire spi_ready;
+    assign tx = 1;
 
-sequencer sequencer1 (
+    sequencer sequencer1 (
 `ifdef SIMULATION
-    .x_l_flag(x_l_flag),
-    .x_l_response(x_l_response),
+        .x_l_flag(x_l_flag),
+        .x_l_response(x_l_response),
 `endif
-    .clk_in(clk),
-    .nrst(~reset),
+        .clk_in(clk),
+        .nrst(~reset),
 
-    .spi_mosi_data(spi_mosi_data),
-    .spi_miso_data(spi_miso_data),
-    .spi_nbits(spi_nbits),
+        .spi_mosi_data(spi_mosi_data),
+        .spi_miso_data(spi_miso_data),
+        .spi_nbits(spi_nbits),
 
-    .spi_request(spi_request),
-    .spi_ready(spi_ready),
+        .spi_request(spi_request),
+        .spi_ready(spi_ready),
 
-    .led_out(leds)
-);
+        .led_out(leds)
+    );
 
-spi_master #(.DIV_COEF(SPI_DIV_COEF)) spi_master1 (
-    .clk_in(clk),
-    .nrst(~reset),
+    spi_master #(.DIV_COEF(SPI_DIV_COEF)) spi_master1 (
+        .clk_in(clk),
+        .nrst(~reset),
 
-    .spi_sck(spi_sck),
-    .spi_mosi(spi_mosi),
-    .spi_miso(spi_miso),
-    .spi_csn(spi_csn),
+        .spi_sck(spi_sck),
+        .spi_mosi(spi_mosi),
+        .spi_miso(spi_miso),
+        .spi_csn(spi_csn),
 
-    .mosi_data(spi_mosi_data),
-    .miso_data(spi_miso_data),
-    .nbits(spi_nbits),
+        .mosi_data(spi_mosi_data),
+        .miso_data(spi_miso_data),
+        .nbits(spi_nbits),
 
-    .request(spi_request),
-    .ready(spi_ready)
-);
+        .request(spi_request),
+        .ready(spi_ready)
+    );
 
 endmodule
