@@ -1,0 +1,46 @@
+# Developper roadmap
+
+## cosim/coemul/riscv/spi rampup
+- [X] Create simple verilog tbs (with ut)
+- - [X] Sim spi 4w master and slave
+- - [X] Sim spi 3w tristate
+- [X] try to ditch the extra `spi3w` port:
+- - [X] add new reset-glitch to spi_master to `set spi3w` in addition to `set div coef`
+- - [X] overhaul darkspi to leverage the 32-bit access to `set div coef` and `set spi3w`
+- - - [X]                                                  33222222 22221111 11111100 00000000
+- - - [X] W 1111 00,cmd24,datalo,datahi                    10987654 32109876 53321098 76543210
+- - - [X] W 1111 80,80,divcoefhi,divcoeflo                                1xxxxxxx_1xxxxxxx_hhhhhhhh_llllllll
+- - - [X] W 1111 81,00,00,00                      => set spi3w=0  1xxxxxx1_xxxxxxx0_xxxxxxxx_xxxxxxxx
+- - - [X] W 1111 81,01,00,00                      => set spi3w=1  1xxxxxx1_xxxxxxx1_xxxxxxxx_xxxxxxxx
+- [X] Test 3-wire darksocv sim
+- [X] Test 3-wire darksocv max1000
+- [X] Port 3-wire to bb
+- [X] submit upstream
+- [X] Try to connect existing LIS3DH HW SPI python client OUT_X only
+- [X] Make SPI python client work for X, Y and Z
+- [ ] -
+- [X] Upgrade cosim_spi to use latest lis32dh_stub and spi_master from darkrsicv with 3-wire support (disable 3W for now)
+- [X] enable cosim + 3w tb ? => would require to first implement 3W in cosims
+- [X] Fix cosim 3W to have same timings as nocosim: LIS3DH respond one sck earlier ? : we must use 2 ffs because the VPI is called on both clock edges
+- [X] setup SystemC framework to simulate SPI LIS3DH 3W master/slave:
+- [X] Fix SystemC to have same timings as nocosim: LIS3DH respond one sck earlier ?
+- [X] Note to self: must use $fatal(1) to terminate tb with error code AND get accurate VCD timespan
+- [X] Support SPI3WIRE with SystemC
+- [ ] -
+- [ ] setup simple qemu-riscv32e running the darkriscv spidemo software
+- [ ] connect qemu-riscv to SYC - react to spi_master transactions ?
+- [ ] -
+- [ ] Try to support BFM vs. TLM in SYC
+- [ ] try to connect i2detect/i2cutils to ser.py BB API ?
+- - [ ] https://git.kernel.org/pub/scm/utils/i2c-tools/i2c-tools.git/
+- [ ] -
+- [ ] once LIS3DH I2C respond OK to i2cutils/BB, try to create an SYC model to mimic the signals
+- [ ] -
+- [ ] add generic transfer command accepting n bytes => faster readings => connect to Gradients_M5Core2 game ?
+- [ ] upgrade darkspi/spi_master to enable eg: 6-bytes reading ? (ie: X/Y/Z)
+- [ ] -
+- [ ] Make SPI Python client work with BB ? (currently it uses the ser.py BB commands/API rather than BB bits itself)
+- [ ] support baudrate/polarity/phase SPI settings ?
+- [ ] Try I2C with same approach ?
+- [ ] Port the demo01_accelerometer_test to darkriscv ?
+- [ ] -
