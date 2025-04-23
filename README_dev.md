@@ -1,4 +1,4 @@
-# Developper roadmap
+# Developer Backlog
 
 ## cosim/coemul/riscv/spi rampup
 - [X] Create simple verilog tbs (with ut)
