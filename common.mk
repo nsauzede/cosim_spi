@@ -29,7 +29,7 @@
 #
 
 SRC:=../src
-RTL:=../rtl
+RTL?=../rtl
 #COSIM:=1
 #SPI3WIRE:=1
 #DEBUG:=1

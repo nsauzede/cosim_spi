@@ -29,6 +29,8 @@
 - [ ] -
 - [ ] setup simple qemu-riscv32e running the darkriscv spidemo software
 - [ ] connect qemu-riscv to SYC - react to spi_master transactions ?
+- - [X] À quick&dirty Qemu darkriscv PoC works!
+- - [ ] next: polish PoC as clean Qemu fork and machine
 - [ ] -
 - [ ] Try to support BFM vs. TLM in SYC
 - [ ] try to connect i2detect/i2cutils to ser.py BB API ?

@@ -30,6 +30,6 @@
 
 .PHONY: all clean view
 all clean view:
-	for d in dutcosim_tb dut3w_tb; do \
+	for d in dut*_tb; do \
 	( cd $$d && $(MAKE) $@ || exit 1) || exit 1; \
 	done
