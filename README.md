@@ -28,5 +28,5 @@ https://github.com/vpecanins/max1000-tutorial
 - [ ] Idea: try to connect to qemu riscv32e + spidemo FW as alternative SPI testbench
 - [ ] Idea: add similar support for I2C
 
-# Developper roadmap
+# Developer Backlog
 See [here](README_dev.md).
