@@ -1,0 +1,23 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Thu Apr 24 22:23:22 2025
+[*]
+[dumpfile] "Vsimple_always.vcd"
+[dumpfile_mtime] "Thu Apr 24 22:22:25 2025"
+[dumpfile_size] 417
+[savefile] "simple_always.gtkw"
+[timestart] 0
+[size] 1426 600
+[pos] -1 -1
+*-4.282477 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[treeopen] TOP.
+[sst_width] 290
+[signals_width] 78
+[sst_expanded] 1
+[sst_vpaned_height] 148
+@28
+TOP.simple_always.clk
+TOP.simple_always.q
+TOP.simple_always.rst
+[pattern_trace] 1
+[pattern_trace] 0
