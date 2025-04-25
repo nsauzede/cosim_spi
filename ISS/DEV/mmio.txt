@@ -1,0 +1,110 @@
+#include "hw/sysbus.h"
+#include "qemu/osdep.h"
+#include "qapi/error.h"
+#include "hw/irq.h"
+#include "hw/registerfields.h"
+#include "hw/qdev-properties.h"
+#include "qemu/log.h"
+
+#define TYPE_DUMMY_DEV "dummy-dev"
+OBJECT_DECLARE_SIMPLE_TYPE(DummyDevState, DUMMY_DEV)
+
+struct DummyDevState {
+    SysBusDevice parent_obj;
+
+    MemoryRegion mmio;
+    uint32_t reg;
+};
+
+static uint64_t dummy_read(void *opaque, hwaddr addr, unsigned size)
+{
+    DummyDevState *s = opaque;
+
+    qemu_log_mask(LOG_GUEST, "dummy: read %d bytes from addr 0x%" HWADDR_PRIx "\n", size, addr);
+
+    if (addr == 0) {
+        return s->reg;
+    }
+    return 0;
+}
+
+static void dummy_write(void *opaque, hwaddr addr, uint64_t value, unsigned size)
+{
+    DummyDevState *s = opaque;
+
+    qemu_log_mask(LOG_GUEST, "dummy: write %d bytes to addr 0x%" HWADDR_PRIx " = 0x%" PRIx64 "\n", size, addr, value);
+
+    if (addr == 0) {
+        s->reg = value;
+    }
+}
+
+static const MemoryRegionOps dummy_mmio_ops = {
+    .read = dummy_read,
+    .write = dummy_write,
+    .endianness = DEVICE_NATIVE_ENDIAN,
+    .valid = {
+        .min_access_size = 4,
+        .max_access_size = 4,
+    }
+};
+
+static void dummy_init(Object *obj)
+{
+    DummyDevState *s = DUMMY_DEV(obj);
+
+    memory_region_init_io(&s->mmio, obj, &dummy_mmio_ops, s, "dummy-mmio", 0x1000);
+    sysbus_init_mmio(SYS_BUS_DEVICE(obj), &s->mmio);
+}
+
+static void dummy_class_init(ObjectClass *klass, void *data)
+{
+    DeviceClass *dc = DEVICE_CLASS(klass);
+    dc->realize = dummy_init;
+}
+
+static const TypeInfo dummy_info = {
+    .name = TYPE_DUMMY_DEV,
+    .parent = TYPE_SYS_BUS_DEVICE,
+    .instance_size = sizeof(DummyDevState),
+    .class_init = dummy_class_init,
+};
+
+static void dummy_register_types(void)
+{
+    type_register_static(&dummy_info);
+}
+type_init(dummy_register_types);
+
+===================================
+
+Then in eg: the `virt` board:
+DeviceState *dev = qdev_new("dummy-dev");
+sysbus_realize_and_unref(SYS_BUS_DEVICE(dev), &error_fatal);
+sysbus_mmio_map(SYS_BUS_DEVICE(dev), 0, 0x40000000);
+
+
+====================================
+
+FAILED: libcommon.a.p/hw_misc_darkriscv_device.c.o
+cc -m64 -Ilibcommon.a.p -Isubprojects/libvduse -I../subprojects/libvduse -I/usr/include/capstone -I/usr/include/p11-kit-1 -I/usr/include/pixm
+an-1 -I/usr/include/libpng16 -I/usr/include/libusb-1.0 -I/usr/include/SDL2 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include
+/libmount -I/usr/include/blkid -I/usr/include/sysprof-6 -I/usr/include/gio-unix-2.0 -I/usr/include/slirp -I/usr/include/gtk-3.0 -I/usr/includ
+e/pango-1.0 -I/usr/include/cloudproviders -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/at-spi2-atk/2.0 -I/usr/include/at
+-spi-2.0 -I/usr/include/atk-1.0 -I/usr/include/dbus-1.0 -I/usr/lib/dbus-1.0/include -I/usr/include/fribidi -I/usr/include/harfbuzz -I/usr/inc
+lude/freetype2 -I/usr/include/vte-2.91 -I/usr/include/rav1e -I/usr/include/svt-av1 -I/usr/include/webp -I/usr/include/pipewire-0.3 -I/usr/inc
+lude/spa-0.2 -fdiagnostics-color=auto -Wall -Winvalid-pch -Werror -std=gnu11 -O2 -g -fstack-protector-strong -Wempty-body -Wendif-labels -Wex
+pansion-to-defined -Wformat-security -Wformat-y2k -Wignored-qualifiers -Wimplicit-fallthrough=2 -Winit-self -Wmissing-format-attribute -Wmiss
+ing-prototypes -Wnested-externs -Wold-style-declaration -Wold-style-definition -Wredundant-decls -Wshadow=local -Wstrict-prototypes -Wtype-li
+mits -Wundef -Wvla -Wwrite-strings -Wno-missing-include-dirs -Wno-psabi -Wno-shift-negative-value -isystem /mnt/huge/lenovo/nico/perso/git/qe
+mu/linux-headers -isystem linux-headers -iquote . -iquote /mnt/huge/lenovo/nico/perso/git/qemu -iquote /mnt/huge/lenovo/nico/perso/git/qemu/i
+nclude -iquote /mnt/huge/lenovo/nico/perso/git/qemu/host/include/x86_64 -iquote /mnt/huge/lenovo/nico/perso/git/qemu/host/include/generic -iq
+uote /mnt/huge/lenovo/nico/perso/git/qemu/tcg/i386 -pthread -mcx16 -msse2 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -fno-stric
+t-aliasing -fno-common -fwrapv -ftrivial-auto-var-init=zero -fzero-call-used-regs=used-gpr -fPIE -DHWY_SHARED_DEFINE -DAVIF_DLL -DEB_DLL -D_D
+EFAULT_SOURCE -D_XOPEN_SOURCE=600 -DNCURSES_WIDECHAR=1 -D_GNU_SOURCE=1 -D_REENTRANT -DSTRUCT_IOVEC_DEFINED -MD -MQ libcommon.a.p/hw_misc_dark
+riscv_device.c.o -MF libcommon.a.p/hw_misc_darkriscv_device.c.o.d -o libcommon.a.p/hw_misc_darkriscv_device.c.o -c ../hw/misc/darkriscv_devic
+e.c
+../hw/misc/darkriscv_device.c:6:10: fatal error: hw/mem/ram.h: No such file or directory
+    6 | #include "hw/mem/ram.h"
+      |          ^~~~~~~~~~~~~~
+compilation terminated.

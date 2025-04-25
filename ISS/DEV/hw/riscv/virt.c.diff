@@ -1,0 +1,129 @@
+diff --git a/hw/riscv/virt.c b/hw/riscv/virt.c
+index e517002fdf..3eb440a54a 100644
+--- a/hw/riscv/virt.c
++++ b/hw/riscv/virt.c
+@@ -59,6 +59,8 @@
+ #include "hw/virtio/virtio-iommu.h"
+ #include "hw/uefi/var-service-api.h"
+ 
++#define DARKRISCV
++
+ /* KVM AIA only supports APLIC MSI. APLIC Wired is always emulated by QEMU. */
+ static bool virt_use_kvm_aia_aplic_imsic(RISCVVirtAIAType aia_type)
+ {
+@@ -80,8 +82,13 @@ static bool virt_aclint_allowed(void)
+ }
+ 
+ static const MemMapEntry virt_memmap[] = {
++#ifdef DARKRISCV
++//    [VIRT_DEBUG] =        {        0x0,         0x100 },
++    [VIRT_MROM] =         {     0x0,        0xf000 },
++#else
+     [VIRT_DEBUG] =        {        0x0,         0x100 },
+     [VIRT_MROM] =         {     0x1000,        0xf000 },
++#endif
+     [VIRT_TEST] =         {   0x100000,        0x1000 },
+     [VIRT_RTC] =          {   0x101000,        0x1000 },
+     [VIRT_CLINT] =        {  0x2000000,       0x10000 },
+@@ -103,6 +110,24 @@ static const MemMapEntry virt_memmap[] = {
+     [VIRT_DRAM] =         { 0x80000000,           0x0 },
+ };
+ 
++#ifdef DARKRISCV
++static void create_fdt_darkriscv(RISCVVirtState *s, const MemMapEntry *memmap,
++                            uint32_t irq_pcie_phandle,
++                            uint32_t msi_pcie_phandle,
++                            uint32_t iommu_sys_phandle)
++{
++    printf("%s: WE CREATE THE darkriscv-mmio!!!!\n", __func__);
++    DeviceState *dev = qdev_new("darkriscv-mmio");
++    sysbus_realize_and_unref(SYS_BUS_DEVICE(dev), &error_fatal);
++#if 1
++    printf("%s: CALLING sysbus_mmio_map            (SECOND) virt_memmap[VIRT_PCIE_MMIO].base=%lx\n", __func__, virt_memmap[VIRT_PCIE_MMIO].base);
++    sysbus_mmio_map(SYS_BUS_DEVICE(dev), 0, virt_memmap[VIRT_PCIE_MMIO].base);
++    //exit(1);
++#endif
++}
++#endif
++
++
+ /* PCIe high mmio is fixed for RV32 */
+ #define VIRT32_HIGH_PCIE_MMIO_BASE  0x300000000ULL
+ #define VIRT32_HIGH_PCIE_MMIO_SIZE  (4 * GiB)
+@@ -1119,6 +1144,9 @@ static void create_fdt_iommu(RISCVVirtState *s, uint16_t bdf)
+                            bdf + 1, iommu_phandle, bdf + 1, 0xffff - bdf);
+ }
+ 
++#ifdef DARKRISCV
++static int nopcie = 1;
++#endif
+ static void finalize_fdt(RISCVVirtState *s)
+ {
+     uint32_t phandle = 1, irq_mmio_phandle = 1, msi_pcie_phandle = 1;
+@@ -1135,8 +1163,17 @@ static void finalize_fdt(RISCVVirtState *s)
+         create_fdt_iommu_sys(s, irq_mmio_phandle, msi_pcie_phandle,
+                              &iommu_sys_phandle);
+     }
+-    create_fdt_pcie(s, virt_memmap, irq_pcie_phandle, msi_pcie_phandle,
++#ifdef DARKRISCV
++    if (!nopcie)
++#endif
++        create_fdt_pcie(s, virt_memmap, irq_pcie_phandle, msi_pcie_phandle,
+                     iommu_sys_phandle);
++#ifdef DARKRISCV
++    else {
++        create_fdt_darkriscv(s, virt_memmap, irq_pcie_phandle, msi_pcie_phandle,
++                    iommu_sys_phandle);
++    }
++#endif
+ 
+     create_fdt_reset(s, virt_memmap, &phandle);
+ 
+@@ -1464,8 +1501,11 @@ static void virt_machine_done(Notifier *notifier, void *data)
+         }
+     }
+ 
++    printf("%s: before riscv_find_and_load_firmware start_addr=%lx\n", __func__, start_addr);
+     firmware_end_addr = riscv_find_and_load_firmware(machine, firmware_name,
+                                                      &start_addr, NULL);
++    printf("%s: before riscv_find_and_load_firmware start_addr=%lx\n", __func__, start_addr);
++    //exit(1);
+ 
+     pflash_blk0 = pflash_cfi01_get_blk(s->flash[0]);
+     if (pflash_blk0) {
+@@ -1486,6 +1526,8 @@ static void virt_machine_done(Notifier *notifier, void *data)
+             kernel_entry = virt_memmap[VIRT_FLASH].base;
+         }
+     }
++    printf("%s: after pflash_blk0 start_addr=%lx\n", __func__, start_addr);
++    //exit(1);
+ 
+     riscv_boot_info_init(&boot_info, &s->soc[0]);
+ 
+@@ -1496,12 +1538,16 @@ static void virt_machine_done(Notifier *notifier, void *data)
+                           true, NULL);
+         kernel_entry = boot_info.image_low_addr;
+     }
++    printf("%s: after kernel_filename start_addr=%lx\n", __func__, start_addr);
++    //exit(1);
+ 
+     fdt_load_addr = riscv_compute_fdt_addr(memmap[VIRT_DRAM].base,
+                                            memmap[VIRT_DRAM].size,
+                                            machine, &boot_info);
+     riscv_load_fdt(fdt_load_addr, machine->fdt);
+ 
++    printf("%s: before riscv_setup_rom_reset_vec start_addr=%lx kernel_entry=%lx\n", __func__, start_addr, kernel_entry);
++    //exit(1);
+     /* load the reset vector */
+     riscv_setup_rom_reset_vec(machine, &s->soc[0], start_addr,
+                               virt_memmap[VIRT_MROM].base,
+@@ -1696,6 +1742,9 @@ static void virt_machine_init(MachineState *machine)
+             qdev_get_gpio_in(virtio_irqchip, VIRTIO_IRQ + i));
+     }
+ 
++#ifdef DARKRISCV
++    if (!nopcie)
++#endif
+     gpex_pcie_init(system_memory, pcie_irqchip, s);
+ 
+     create_platform_bus(s, mmio_irqchip);
